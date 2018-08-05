@@ -1,0 +1,59 @@
+type Query {
+    blocks(first: Long = 10, offset: Long = -1): [Block]
+    block(number: Long!): Block
+    transaction(txHash: Hash256!): Transaction
+}
+
+scalar Hash256
+scalar Address
+
+type Block {
+    number: Long
+    nrgConsumed: Long
+    nrgLimit: Long
+    bloom: String # ByteArrayWrapper
+    extraData: String #ByteArrayWrapper
+    solution: String #ByteArrayWrapper
+    hash: Hash256
+    parentHash: Hash256
+    nonce: BigInteger
+    difficulty: BigInteger
+    totalDifficulty: BigInteger
+    minerAddress: Address
+    stateRoot: Hash256
+    txTrieRoot: Hash256
+    size: Int
+    txDetails: [TxDetails]
+    blockTime: Long
+}
+
+
+type Transaction {
+    transactionIndex: Int
+    blockNumber: Long
+    timeStamp: Long
+    nrgConsumed: Long
+    nrgPrice: Long
+    from: Address
+    to: Address
+    blockHash: Hash256
+    txHash: Hash256
+    nonce: BigInteger
+    value: BigInteger
+    data: String #ByteArrayWrapper
+}
+
+type TxDetails {
+    from: Address
+    to: Address
+    txHash: Hash256
+    value: BigInteger
+    nonce: BigInteger
+    nrgConsumed: Long
+    nrgPrice: Long
+    data: String
+    txIndex: Int
+    contract: Address
+    timestamp: Long
+    error: String
+}

@@ -1,6 +1,7 @@
 package org.satran.aion.graphql.pool;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,17 @@ public class AionRpcConnectionHelper {
     @Autowired
     public AionRpcConnectionHelper(@Value("${rpc.endpoint}") String rpcEndPoint) {
         logger.info("Connection url : " + rpcEndPoint);
-        pool = new GenericObjectPool<AionConnection>(new AionRpcPoolObjectFactory(rpcEndPoint));
+
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+
+        config.setMaxTotal(100);
+        config.setMaxIdle(5);
+        config.setMinIdle(1);
+        config.setTestOnBorrow(true);
+        config.setBlockWhenExhausted(false);
+
+        pool = new GenericObjectPool<AionConnection>(new AionRpcPoolObjectFactory(rpcEndPoint), config);
+
     }
 
     public AionConnection getConnection() {

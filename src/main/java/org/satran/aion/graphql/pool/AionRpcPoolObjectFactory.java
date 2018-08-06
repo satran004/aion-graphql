@@ -44,4 +44,12 @@ public class AionRpcPoolObjectFactory extends BasePooledObjectFactory<org.satran
             aionConnection.destroy();
         }
     }
+
+    @Override
+    public boolean validateObject(PooledObject<AionConnection> p) {
+        if(p.getObject() != null)
+            return p.getObject().getApi().isConnected();
+        else
+            return super.validateObject(p);
+    }
 }

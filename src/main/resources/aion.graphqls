@@ -2,6 +2,7 @@ type Query {
     blocks(first: Long = 10, offset: Long = -1): [Block]
     block(number: Long!): Block
     transaction(txHash: Hash256!): Transaction
+    transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
 }
 
 scalar Hash256

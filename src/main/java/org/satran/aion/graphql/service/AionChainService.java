@@ -2,6 +2,7 @@ package org.satran.aion.graphql.service;
 
 import org.aion.api.IAionAPI;
 import org.aion.api.type.ApiMsg;
+import org.aion.api.type.Block;
 import org.aion.api.type.BlockDetails;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
@@ -112,6 +113,35 @@ public class AionChainService {
             connectionHelper.closeConnection(connection);
         }
 
+    }
+
+    public Block getLatestBlock() {
+        AionConnection connection = connectionHelper.getConnection();
+
+        if(connection == null)
+            throw new ConnectionException("Connection could not be established");
+
+        IAionAPI api = connection.getApi();
+        ApiMsg apiMsg = connection.getApiMsg();
+
+        try {
+            if(logger.isDebugEnabled())
+                logger.debug("Getting latest block");
+
+            apiMsg.set(api.getAdmin().getBlocksByLatest(1L));
+
+            if (apiMsg.isError()) {
+                logger.error("Unable to get the latest block" + apiMsg.getErrString());
+                throw new RuntimeException(apiMsg.getErrString());
+            }
+
+            Block block = ((List<Block>)apiMsg.getObject()).get(0);
+
+            return block;
+
+        } finally {
+            connectionHelper.closeConnection(connection);
+        }
     }
 
     public Transaction getTransaction(Hash256 txHash) {

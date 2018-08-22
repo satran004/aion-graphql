@@ -1,10 +1,10 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
-import org.aion.api.type.BlockDetails;
 import org.aion.api.type.Transaction;
-import org.aion.api.type.TxDetails;
 import org.aion.base.type.Hash256;
+import org.satran.blockchain.graphql.entities.Block;
+import org.satran.blockchain.graphql.entities.TxDetails;
 import org.satran.blockchain.graphql.exception.DataFetchingException;
 import org.satran.blockchain.graphql.impl.aion.service.TxnServiceImpl;
 import org.satran.blockchain.graphql.service.BlockService;
@@ -27,7 +27,7 @@ public class Query implements GraphQLQueryResolver {
     private TxnServiceImpl txnService;
 
 
-    public List<BlockDetails> blocks(long first, long offset) {
+    public List<Block> blocks(long first, long offset) {
         try {
             return blockService.getBlocks(first, offset);
         } catch (Exception e) {
@@ -37,7 +37,7 @@ public class Query implements GraphQLQueryResolver {
 
     }
 
-    public BlockDetails block(long number) {
+    public Block block(long number) {
         try {
             return blockService.getBlock(number);
         } catch(Exception e) {

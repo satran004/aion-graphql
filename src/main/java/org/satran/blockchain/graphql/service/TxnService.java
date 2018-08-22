@@ -1,8 +1,8 @@
 package org.satran.blockchain.graphql.service;
 
 import org.aion.api.type.Transaction;
-import org.aion.api.type.TxDetails;
 import org.aion.base.type.Hash256;
+import org.satran.blockchain.graphql.entities.TxDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

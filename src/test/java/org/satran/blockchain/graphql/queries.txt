@@ -1,0 +1,40 @@
+{
+ blocks {
+  number
+    nrgConsumed
+    nrgLimit
+    bloom
+    extraData
+    solution
+    hash
+    parentHash
+    nonce
+    difficulty
+    totalDifficulty
+    minerAddress
+    stateRoot
+    txTrieRoot
+    size
+    blockTime
+
+  }
+}
+
+{
+  blocks {
+    txDetails {
+      from
+      to
+      txHash
+      value
+      nonce
+      nrgConsumed
+      nrgPrice
+      data
+      txIndex
+      contract
+      timestamp
+      error
+    }
+  }
+}

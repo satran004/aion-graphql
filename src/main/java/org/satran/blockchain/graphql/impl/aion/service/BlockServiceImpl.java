@@ -2,18 +2,22 @@ package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.IAionAPI;
 import org.aion.api.type.ApiMsg;
-import org.aion.api.type.Block;
 import org.aion.api.type.BlockDetails;
+import org.satran.blockchain.graphql.entities.Block;
 import org.satran.blockchain.graphql.exception.ConnectionException;
 import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
+import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.pool.ConnectionHelper;
 import org.satran.blockchain.graphql.service.BlockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class BlockServiceImpl implements BlockService {
@@ -27,7 +31,7 @@ public class BlockServiceImpl implements BlockService {
 
     }
 
-    public  List<BlockDetails> getBlocks(Long first, long offset) {
+    public  List<Block> getBlocks(Long first, long offset) {
 
         AionConnection connection = (AionConnection) connectionHelper.getConnection();
 
@@ -68,7 +72,10 @@ public class BlockServiceImpl implements BlockService {
             if(logger.isDebugEnabled())
                 logger.debug("Result: " + block.toString());
 
-            return block;
+            return block.stream()
+                    .map(blockDetails -> ModelConverter.convert(blockDetails))
+                    .collect(Collectors.toList());
+
         } finally {
            connectionHelper.closeConnection(connection);
         }
@@ -76,7 +83,7 @@ public class BlockServiceImpl implements BlockService {
 
     }
 
-    public BlockDetails getBlock(long number) {
+    public Block getBlock(long number) {
 
         if(logger.isDebugEnabled())
             logger.debug("Getting block for " + number);
@@ -106,7 +113,8 @@ public class BlockServiceImpl implements BlockService {
 
             BlockDetails block = blkDetails.get(0);
 
-            return block;
+            Block b = ModelConverter.convert(block);
+            return b;
 
         } finally {
             connectionHelper.closeConnection(connection);
@@ -134,9 +142,10 @@ public class BlockServiceImpl implements BlockService {
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            Block block = ((List<Block>)apiMsg.getObject()).get(0);
+            org.aion.api.type.Block aionBlock = ((List<org.aion.api.type.Block>)apiMsg.getObject()).get(0);
 
-            return block;
+            Block b = ModelConverter.convert(aionBlock);
+            return b;
 
         } finally {
             connectionHelper.closeConnection(connection);

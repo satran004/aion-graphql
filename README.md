@@ -28,7 +28,7 @@ $> mvn clean build
 
 <b>Run:</b>
 
-$> mvn spring-boot:run -Dspring-boot.run.arguments=--rpc.endpoint=tcp://<kernel-host>:8547
+$> mvn spring-boot:run -Dspring-boot.run.arguments=--rpc.endpoint=tcp://[kernel-host]:8547
 
 
 

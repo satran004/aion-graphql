@@ -1,7 +1,6 @@
-package org.satran.aion.graphql.scalars;
+package org.satran.aion.graphql.autoconfig;
 
 import com.oembedler.moon.graphql.boot.GraphQLJavaToolsAutoConfiguration;
-import graphql.language.EnumValue;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingSerializeException;
@@ -17,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureBefore(GraphQLJavaToolsAutoConfiguration.class)
-public class ScalarAutoConfiguration {
+public class AionGQLAutoConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScalarAutoConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(AionGQLAutoConfiguration.class);
 
     public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 
@@ -97,4 +96,6 @@ public class ScalarAutoConfiguration {
     public GraphQLScalarType hash256Type() {
         return hash256;
     }
+
+
 }

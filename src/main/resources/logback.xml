@@ -9,13 +9,21 @@
         </layout>
     </appender>
 
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
     <logger name="org.satran.aion" level="DEBUG"
             additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
     <root level="error">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDERR" />
     </root>
 
 </configuration>

@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AionChainService {
+public class BlockService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AionChainService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlockService.class);
 
     @Autowired
     private AionRpcConnectionHelper connectionHelper;
 
-    public AionChainService() {
+    public BlockService() {
 
     }
 
@@ -32,7 +32,7 @@ public class AionChainService {
 
         AionConnection connection = connectionHelper.getConnection();
 
-        if(first >= 30)
+        if(first > 30)
             throw new RuntimeException("Too many blocks. You can only request upto 30 blocks in a call");
 
         if(connection == null)
@@ -144,42 +144,4 @@ public class AionChainService {
         }
     }
 
-    public Transaction getTransaction(Hash256 txHash) {
-        if(logger.isDebugEnabled())
-            logger.debug("Getting transaction for " + txHash);
-
-        AionConnection connection = connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
-
-        try {
-            apiMsg.set(api.getChain().getTransactionByHash(txHash));
-            if (apiMsg.isError()) {
-                logger.error("Unable to get the transaction" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
-            }
-
-            if(logger.isDebugEnabled())
-                logger.debug("Transaction details" + apiMsg.getObject());
-
-            Transaction transaction = apiMsg.getObject();
-
-
-//            if(blkDetails == null || blkDetails.size() == 0)
-//                throw new RuntimeException("No block found with number : " + number);
-//
-//            BlockDetails block = blkDetails.get(0);
-//
-//            return block;
-
-            return transaction;
-
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
-    }
 }

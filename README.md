@@ -20,6 +20,16 @@ Currently, only the following read-only operations are supported:
 
 The project will be enhanced to support other read and write operations.
 
+<H3>Build From Source</H3>
+
+<b>Compile:</b>
+
+$> mvn clean build
+
+<b>Run:</b>
+
+$> mvn spring-boot:run -Dspring-boot.run.arguments=--rpc.endpoint=tcp://<kernel-host>:8547
+
 
 
 

@@ -1,11 +1,10 @@
-package org.satran.aion.graphql.pool;
+package org.satran.blockchain.graphql.pool;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,15 +12,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class AionRpcConnectionHelper {
+public class ConnectionHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(AionRpcConnectionHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionHelper.class);
 
-    private GenericObjectPool<AionConnection> pool;
+    private GenericObjectPool<ChainConnection> pool;
 
     @Autowired
-    public AionRpcConnectionHelper(@Value("${rpc.endpoint}") String rpcEndPoint) {
-        logger.info("Connection url : " + rpcEndPoint);
+    public ConnectionHelper(ChainConnectionPoolObjectFactory connectionPoolObjectFactory) {
 
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
 
@@ -31,11 +29,11 @@ public class AionRpcConnectionHelper {
         config.setTestOnBorrow(true);
         config.setBlockWhenExhausted(false);
 
-        pool = new GenericObjectPool<AionConnection>(new AionRpcPoolObjectFactory(rpcEndPoint), config);
+        pool = new GenericObjectPool<ChainConnection>(connectionPoolObjectFactory, config);
 
     }
 
-    public AionConnection getConnection() {
+    public ChainConnection getConnection() {
         try {
             return pool.borrowObject();
         } catch (Exception e) {
@@ -44,7 +42,7 @@ public class AionRpcConnectionHelper {
         }
     }
 
-    public void closeConnection(AionConnection connection) {
+    public void closeConnection(ChainConnection connection) {
         pool.returnObject(connection);
     }
 }

@@ -1,4 +1,4 @@
-package org.satran.aion.graphql.autoconfig;
+package org.satran.blockchain.graphql.autoconfig;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
@@ -6,7 +6,6 @@ import graphql.servlet.GraphQLErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
@@ -14,9 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Configuration
-@AutoConfigureBefore(AionGQLAutoConfiguration.class)
-public class AionWebAutoConfiguration {
-    private final static Logger log = LoggerFactory.getLogger(AionWebAutoConfiguration.class);
+@AutoConfigureBefore(ChainGQLAutoConfiguration.class)
+public class ChainWebAutoConfiguration {
+    private final static Logger log = LoggerFactory.getLogger(ChainWebAutoConfiguration.class);
 
 
     GraphQLErrorHandler errorHandler = new GraphQLErrorHandler() {
@@ -52,7 +51,7 @@ public class AionWebAutoConfiguration {
         }
     };
 
-    @Bean
+    //@Bean
     public GraphQLErrorHandler graphQLErrorHandler() {
         return errorHandler;
     }

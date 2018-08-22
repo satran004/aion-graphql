@@ -1,31 +1,32 @@
-package org.satran.aion.graphql.service;
+package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.IAionAPI;
 import org.aion.api.type.*;
 import org.aion.base.type.Hash256;
-import org.satran.aion.graphql.exception.ConnectionException;
-import org.satran.aion.graphql.pool.AionConnection;
-import org.satran.aion.graphql.pool.AionRpcConnectionHelper;
+import org.satran.blockchain.graphql.exception.ConnectionException;
+import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
+import org.satran.blockchain.graphql.pool.ConnectionHelper;
+import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class TxnService {
+@Repository
+public class TxnServiceImpl implements TxnService{
 
-    private static final Logger logger = LoggerFactory.getLogger(TxnService.class);
-
-    @Autowired
-    private BlockService chainService;
+    private static final Logger logger = LoggerFactory.getLogger(TxnServiceImpl.class);
 
     @Autowired
-    private AionRpcConnectionHelper connectionHelper;
+    private BlockServiceImpl chainService;
 
-    public TxnService() {
+    @Autowired
+    private ConnectionHelper connectionHelper;
+
+    public TxnServiceImpl() {
 
     }
 
@@ -68,7 +69,7 @@ public class TxnService {
         if(logger.isDebugEnabled())
             logger.debug("Getting transaction for " + txHash);
 
-        AionConnection connection = connectionHelper.getConnection();
+        AionConnection connection = (AionConnection) connectionHelper.getConnection();
 
         if(connection == null)
             throw new ConnectionException("Connection could not be established");

@@ -1,4 +1,4 @@
-package org.satran.aion.graphql.autoconfig;
+package org.satran.blockchain.graphql.autoconfig;
 
 import com.oembedler.moon.graphql.boot.GraphQLJavaToolsAutoConfiguration;
 import graphql.language.StringValue;
@@ -7,7 +7,7 @@ import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
-import org.satran.aion.graphql.exception.CoercingParseLiteralException;
+import org.satran.blockchain.graphql.exception.CoercingParseLiteralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AutoConfigureBefore(GraphQLJavaToolsAutoConfiguration.class)
-public class AionGQLAutoConfiguration {
+public class ChainGQLAutoConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(AionGQLAutoConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChainGQLAutoConfiguration.class);
 
     public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 

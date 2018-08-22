@@ -1,4 +1,4 @@
-package org.satran.aion.graphql.autoconfig;
+package org.satran.blockchain.graphql.autoconfig;
 
 import graphql.ErrorType;
 import graphql.ExceptionWhileDataFetching;

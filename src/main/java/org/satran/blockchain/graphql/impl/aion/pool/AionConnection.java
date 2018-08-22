@@ -1,9 +1,11 @@
-package org.satran.aion.graphql.pool;
+package org.satran.blockchain.graphql.impl.aion.pool;
 
 import org.aion.api.IAionAPI;
 import org.aion.api.type.ApiMsg;
+import org.satran.blockchain.graphql.pool.ChainConnection;
+import org.springframework.stereotype.Component;
 
-public class AionConnection {
+public class AionConnection implements ChainConnection {
 
     private IAionAPI api;
     private ApiMsg apiMsg;
@@ -29,6 +31,15 @@ public class AionConnection {
         this.apiMsg = apiMsg;
     }
 
+    @Override
+    public boolean validate() {
+        if(api != null)
+            return api.isConnected();
+        else
+            return false;
+    }
+
+    @Override
     public void destroy() {
         if(api != null) {
             api.destroyApi();

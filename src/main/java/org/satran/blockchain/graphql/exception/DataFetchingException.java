@@ -1,4 +1,4 @@
-package org.satran.aion.graphql.exception;
+package org.satran.blockchain.graphql.exception;
 
 import graphql.ErrorType;
 import graphql.GraphQLError;

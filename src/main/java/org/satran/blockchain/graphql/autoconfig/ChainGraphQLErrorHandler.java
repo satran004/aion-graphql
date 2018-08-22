@@ -1,11 +1,11 @@
-package org.satran.aion.graphql.autoconfig;
+package org.satran.blockchain.graphql.autoconfig;
 
 import graphql.GraphQLError;
 import graphql.servlet.GraphQLErrorHandler;
 
 import java.util.List;
 
-public class AionGraphQLErrorHandler implements GraphQLErrorHandler{
+public class ChainGraphQLErrorHandler implements GraphQLErrorHandler{
     @Override
     public boolean errorsPresent(List<GraphQLError> errors) {
         return false;

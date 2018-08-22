@@ -1,9 +1,6 @@
 package org.satran.aion.graphql.resolvers;
 
-import java.util.List;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
-import graphql.GraphQLException;
-import graphql.servlet.GraphQLErrorHandler;
 import org.aion.api.type.BlockDetails;
 import org.aion.api.type.Transaction;
 import org.aion.api.type.TxDetails;
@@ -15,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class Query implements GraphQLQueryResolver {
@@ -32,7 +31,7 @@ public class Query implements GraphQLQueryResolver {
         try {
             return aionService.getBlocks(first, offset);
         } catch (Exception e) {
-            logger.error("Error getting blocks --", e);
+            logger.error("Error getting blocks", e);
             throw new DataFetchingException(e.getMessage());
         }
 
@@ -43,7 +42,7 @@ public class Query implements GraphQLQueryResolver {
             return aionService.getBlock(number);
         } catch(Exception e) {
             logger.error("Error getting block ", e);
-            throw e;
+            throw new DataFetchingException(e.getMessage());
         }
     }
 
@@ -52,7 +51,7 @@ public class Query implements GraphQLQueryResolver {
             return txnService.getTransaction(txHash);
         } catch (Exception e) {
             logger.error("Error getting transaction", e);
-            throw e;
+            throw new DataFetchingException(e.getMessage());
         }
     }
 
@@ -61,7 +60,7 @@ public class Query implements GraphQLQueryResolver {
             return txnService.getTransactions(fromBlock, limit);
         } catch (Exception e) {
             logger.error("Error getting transactions", e);
-            throw e;
+            throw new DataFetchingException(e.getMessage());
         }
     }
 }

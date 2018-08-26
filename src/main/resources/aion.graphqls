@@ -5,6 +5,16 @@ type Query {
     transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
 }
 
+type Mutation {
+
+    accountCreate(passphrase: [String!], privateKey: Boolean = false): [AccountKey]
+    accountExport(keys: [AccountKeyExportInput!]): AccountKeyExport
+    accountBackup(keys: [AccountKeyExportInput!]): AccountKeyExport
+    #Return list of accounts which cannot be imported
+    accountImport(privateKey: String!, passphrase: String!): Boolean
+
+}
+
 scalar Hash256
 scalar Address
 
@@ -92,4 +102,20 @@ type TxDetails {
     contract: String
     timestamp: Long
     error: String
+}
+
+type AccountKey {
+    publicKey: String
+    privateKey: String
+    passphrase: String
+}
+
+type AccountKeyExport {
+    keyfiles: [String]
+    invalidAddr: [String]
+}
+
+input AccountKeyExportInput {
+    publicKey: String
+    passphrase: String
 }

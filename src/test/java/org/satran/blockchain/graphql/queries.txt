@@ -1,6 +1,6 @@
 {
- blocks {
-  number
+  blocks {
+    number
     nrgConsumed
     nrgLimit
     bloom
@@ -16,9 +16,9 @@
     txTrieRoot
     size
     blockTime
-
   }
 }
+
 
 {
   blocks {

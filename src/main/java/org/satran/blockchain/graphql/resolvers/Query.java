@@ -3,11 +3,13 @@ package org.satran.blockchain.graphql.resolvers;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
+import org.satran.blockchain.graphql.entities.AccountKey;
 import org.satran.blockchain.graphql.entities.Block;
 import org.satran.blockchain.graphql.entities.TxDetails;
 import org.satran.blockchain.graphql.exception.DataFetchingException;
-import org.satran.blockchain.graphql.impl.aion.service.TxnServiceImpl;
+import org.satran.blockchain.graphql.service.AccountService;
 import org.satran.blockchain.graphql.service.BlockService;
+import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,10 @@ public class Query implements GraphQLQueryResolver {
     private BlockService blockService;
 
     @Autowired
-    private TxnServiceImpl txnService;
+    private TxnService txnService;
+
+    @Autowired
+    private AccountService accountService;
 
 
     public List<Block> blocks(long first, long offset) {
@@ -63,4 +68,5 @@ public class Query implements GraphQLQueryResolver {
             throw new DataFetchingException(e.getMessage());
         }
     }
+
 }

@@ -1,4 +1,4 @@
-package org.satran.blockchain.graphql.entities;
+package org.satran.blockchain.graphql.model;
 
 import java.math.BigInteger;
 

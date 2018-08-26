@@ -3,6 +3,8 @@ type Query {
     block(number: Long!): Block
     transaction(txHash: Hash256!): Transaction
     transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
+
+    account(publicKey: String!, blockNumber: Long = -1) : Account
 }
 
 type Mutation {
@@ -102,6 +104,12 @@ type TxDetails {
     contract: String
     timestamp: Long
     error: String
+}
+
+type Account {
+    publicKey: String
+    balance: BigInteger
+    #transactions: [TxDetails]
 }
 
 type AccountKey {

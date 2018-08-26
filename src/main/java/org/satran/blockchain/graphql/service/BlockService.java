@@ -1,7 +1,6 @@
 package org.satran.blockchain.graphql.service;
 
-import org.aion.api.type.BlockDetails;
-import org.satran.blockchain.graphql.entities.Block;
+import org.satran.blockchain.graphql.model.Block;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

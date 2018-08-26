@@ -1,4 +1,4 @@
-package org.satran.blockchain.graphql.entities.input;
+package org.satran.blockchain.graphql.model.input;
 
 public class AccountKeyExportInput {
 

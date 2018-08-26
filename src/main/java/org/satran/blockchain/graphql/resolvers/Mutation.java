@@ -1,9 +1,9 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
-import org.satran.blockchain.graphql.entities.AccountKey;
-import org.satran.blockchain.graphql.entities.AccountKeyExport;
-import org.satran.blockchain.graphql.entities.input.AccountKeyExportInput;
+import org.satran.blockchain.graphql.model.AccountKey;
+import org.satran.blockchain.graphql.model.AccountKeyExport;
+import org.satran.blockchain.graphql.model.input.AccountKeyExportInput;
 import org.satran.blockchain.graphql.exception.DataFetchingException;
 import org.satran.blockchain.graphql.service.AccountService;
 import org.slf4j.Logger;

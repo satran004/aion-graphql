@@ -2,11 +2,10 @@ package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.IAionAPI;
 import org.aion.api.type.ApiMsg;
-import org.aion.api.type.BlockDetails;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
-import org.satran.blockchain.graphql.entities.Block;
-import org.satran.blockchain.graphql.entities.TxDetails;
+import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.exception.ConnectionException;
 import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
 import org.satran.blockchain.graphql.pool.ConnectionHelper;

@@ -5,11 +5,11 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.base.type.Address;
-import org.satran.blockchain.graphql.entities.AccountKey;
-import org.satran.blockchain.graphql.entities.AccountKeyExport;
-import org.satran.blockchain.graphql.entities.input.AccountKeyExportInput;
+import org.satran.blockchain.graphql.model.Account;
+import org.satran.blockchain.graphql.model.AccountKey;
+import org.satran.blockchain.graphql.model.AccountKeyExport;
+import org.satran.blockchain.graphql.model.input.AccountKeyExportInput;
 import org.satran.blockchain.graphql.exception.ConnectionException;
-import org.satran.blockchain.graphql.exception.DataFetchingException;
 import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
 import org.satran.blockchain.graphql.pool.ConnectionHelper;
 import org.satran.blockchain.graphql.service.AccountService;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.Data;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -218,6 +218,59 @@ public class AccountServiceImpl implements AccountService {
             else
                 return false;
 
+
+        } finally {
+            connectionHelper.closeConnection(connection);
+        }
+
+    }
+
+    @Override
+    public Account getAccount(String publicKey, List<String> fields, long blockNumber) {
+
+        Account account = new Account();
+        account.setPublicKey(publicKey);
+
+        if(fields.contains("balance"))
+            account.setBalance(getBalance(publicKey, blockNumber));
+
+        return account;
+
+    }
+
+
+    @Override
+    public BigInteger getBalance(String publicKey, long blockNumber) {
+        if(logger.isDebugEnabled())
+            logger.debug("Getting balance for account: " + publicKey + "  at block number: " + blockNumber);
+
+        if(publicKey == null || publicKey.isEmpty())
+            throw new RuntimeException("Can't get balance for null account");
+
+
+        AionConnection connection = (AionConnection) connectionHelper.getConnection();
+
+        if(connection == null)
+            throw new ConnectionException("Connection could not be established");
+
+        IAionAPI api = connection.getApi();
+        ApiMsg apiMsg = connection.getApiMsg();
+
+        try {
+
+            if(blockNumber == -1) //get latest balance
+                apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey)));
+            else
+                apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey), blockNumber));
+
+            if (apiMsg.isError()) {
+                logger.error("Unable to get balance for account {} : " + apiMsg.getErrString(), publicKey);
+                throw new RuntimeException(apiMsg.getErrString());
+            }
+
+            BigInteger balance = apiMsg.getObject();
+
+            return balance;
 
         } finally {
             connectionHelper.closeConnection(connection);

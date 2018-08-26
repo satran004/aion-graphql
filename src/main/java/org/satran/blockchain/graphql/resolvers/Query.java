@@ -3,9 +3,9 @@ package org.satran.blockchain.graphql.resolvers;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
-import org.satran.blockchain.graphql.entities.AccountKey;
-import org.satran.blockchain.graphql.entities.Block;
-import org.satran.blockchain.graphql.entities.TxDetails;
+import org.satran.blockchain.graphql.model.Account;
+import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.exception.DataFetchingException;
 import org.satran.blockchain.graphql.service.AccountService;
 import org.satran.blockchain.graphql.service.BlockService;
@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -65,6 +66,18 @@ public class Query implements GraphQLQueryResolver {
             return txnService.getTransactions(fromBlock, limit);
         } catch (Exception e) {
             logger.error("Error getting transactions", e);
+            throw new DataFetchingException(e.getMessage());
+        }
+    }
+
+    public Account account(String publicKey, long blockNumber) {
+        try {
+            List<String> fields = new ArrayList<>();
+            fields.add("balance");
+
+            return accountService.getAccount(publicKey, fields, blockNumber);
+        } catch (Exception e) {
+            logger.error("Error getting transaction", e);
             throw new DataFetchingException(e.getMessage());
         }
     }

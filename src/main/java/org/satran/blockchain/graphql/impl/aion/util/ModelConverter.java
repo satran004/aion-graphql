@@ -1,8 +1,8 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
 import org.aion.api.type.BlockDetails;
-import org.satran.blockchain.graphql.entities.Block;
-import org.satran.blockchain.graphql.entities.TxDetails;
+import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.TxDetails;
 import org.springframework.beans.BeanUtils;
 
 import java.util.stream.Collectors;

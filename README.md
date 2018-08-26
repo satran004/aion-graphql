@@ -1,4 +1,5 @@
-<H1>GraphQL interface for Aion Blockchain</H1>
+<H1>GraphQL interface for Aion Blockchain</H1> 
+<img src="https://travis-ci.org/satran004/aion-graphql.svg?branch=master"/>
 
 Demo Setup: http://graphql.aion-tools.info/graphiql
 

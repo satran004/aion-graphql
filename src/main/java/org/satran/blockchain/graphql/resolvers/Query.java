@@ -5,10 +5,12 @@ import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.NetInfo;
 import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.exception.DataFetchingException;
 import org.satran.blockchain.graphql.service.AccountService;
 import org.satran.blockchain.graphql.service.BlockService;
+import org.satran.blockchain.graphql.service.NetService;
 import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,9 @@ public class Query implements GraphQLQueryResolver {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private NetService netService;
 
 
     public List<Block> blocks(long first, long offset) {
@@ -78,6 +83,16 @@ public class Query implements GraphQLQueryResolver {
             return accountService.getAccount(publicKey, fields, blockNumber);
         } catch (Exception e) {
             logger.error("Error getting transaction", e);
+            throw new DataFetchingException(e.getMessage());
+        }
+    }
+
+    public NetInfo netInfo() {
+
+        try {
+            return netService.getNetworkInfo();
+        } catch (Exception e) {
+            logger.error("Error getting network info");
             throw new DataFetchingException(e.getMessage());
         }
     }

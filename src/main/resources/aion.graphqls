@@ -5,6 +5,8 @@ type Query {
     transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
 
     account(publicKey: String!, blockNumber: Long = -1) : Account
+
+    netInfo: NetInfo
 }
 
 type Mutation {
@@ -126,4 +128,22 @@ type AccountKeyExport {
 input AccountKeyExportInput {
     publicKey: String
     passphrase: String
+}
+
+
+type NetInfo {
+    isSyncing: Boolean
+    protocol: Protocol
+   # activeNodes: [NodeInfo]
+
+}
+
+type Protocol {
+    api: String
+    db: String
+    kernel: String
+    miner: String
+    net: String
+    txpool: String
+    vm: String
 }

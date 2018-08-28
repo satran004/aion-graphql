@@ -1,7 +1,9 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
 import org.aion.api.type.BlockDetails;
+import org.aion.api.type.Protocol;
 import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.ProtocolInfo;
 import org.satran.blockchain.graphql.model.TxDetails;
 import org.springframework.beans.BeanUtils;
 
@@ -63,5 +65,13 @@ public class ModelConverter {
         block.setSize(aionBlock.getSize());
 
         return block;
+    }
+
+    public static ProtocolInfo convert(Protocol aionProtocol) {
+        ProtocolInfo protocolInfo = new ProtocolInfo();
+
+        BeanUtils.copyProperties(aionProtocol, protocolInfo);
+
+        return protocolInfo;
     }
 }

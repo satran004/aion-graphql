@@ -16,14 +16,14 @@ public class ModelConverter {
 
         BeanUtils.copyProperties(blockDetails, b);
 
-        b.setBloom(blockDetails.getBloom().toString());
-        b.setExtraData(blockDetails.getExtraData().toString());
-        b.setSolution(blockDetails.getSolution().toString());
-        b.setHash(blockDetails.getHash().toString());
-        b.setParentHash(blockDetails.getParentHash().toString());
-        b.setMinerAddress(blockDetails.getMinerAddress().toString());
-        b.setStateRoot(blockDetails.getStateRoot().toString());
-        b.setTxTrieRoot(blockDetails.getTxTrieRoot().toString());
+        b.setBloom(String.valueOf(blockDetails.getBloom()));
+        b.setExtraData(String.valueOf(blockDetails.getExtraData()));
+        b.setSolution(String.valueOf(blockDetails.getSolution()));
+        b.setHash(String.valueOf(blockDetails.getHash()));
+        b.setParentHash(String.valueOf(blockDetails.getParentHash()));
+        b.setMinerAddress(String.valueOf(blockDetails.getMinerAddress()));
+        b.setStateRoot(String.valueOf(blockDetails.getStateRoot()));
+        b.setTxTrieRoot(String.valueOf(blockDetails.getTxTrieRoot()));
         b.setSize(blockDetails.getSize());
 
         b.setTxDetails(blockDetails.getTxDetails().stream()
@@ -38,12 +38,12 @@ public class ModelConverter {
 
         BeanUtils.copyProperties(aionTxDetails, tx);
 
-        tx.setTo(aionTxDetails.getTo().toString());
-        tx.setFrom(aionTxDetails.getFrom().toString());
-        tx.setContract(aionTxDetails.getContract().toString());
+        tx.setTo(String.valueOf(aionTxDetails.getTo()));
+        tx.setFrom(String.valueOf(aionTxDetails.getFrom()));
+        tx.setContract(String.valueOf(aionTxDetails.getContract()));
 
-        tx.setTxHash(aionTxDetails.getTxHash().toString());
-        tx.setData(aionTxDetails.getData().toString());
+        tx.setTxHash(String.valueOf(aionTxDetails.getTxHash()));
+        tx.setData(String.valueOf(aionTxDetails.getData()));
 
         return  tx;
     }
@@ -53,15 +53,15 @@ public class ModelConverter {
 
         BeanUtils.copyProperties(aionBlock, block);
 
-        block.setBloom(aionBlock.getBloom().toString());
-        block.setExtraData(aionBlock.getExtraData().toString());
-        block.setSolution(aionBlock.getSolution().toString());
+        block.setBloom(String.valueOf(aionBlock.getBloom()));
+        block.setExtraData(String.valueOf(aionBlock.getExtraData()));
+        block.setSolution(String.valueOf(aionBlock.getSolution()));
 
-        block.setHash(aionBlock.getHash().toString());
-        block.setParentHash(aionBlock.getParentHash().toString());
-        block.setMinerAddress(aionBlock.getMinerAddress().toString());
-        block.setStateRoot(aionBlock.getStateRoot().toString());
-        block.setTxTrieRoot(aionBlock.getTxTrieRoot().toString());
+        block.setHash(String.valueOf(aionBlock.getHash()));
+        block.setParentHash(String.valueOf(aionBlock.getParentHash()));
+        block.setMinerAddress(String.valueOf(aionBlock.getMinerAddress()));
+        block.setStateRoot(String.valueOf(aionBlock.getStateRoot()));
+        block.setTxTrieRoot(String.valueOf(aionBlock.getTxTrieRoot()));
         block.setSize(aionBlock.getSize());
 
         return block;

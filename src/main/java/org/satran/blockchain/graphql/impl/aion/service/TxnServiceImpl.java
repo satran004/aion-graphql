@@ -1,14 +1,10 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
-import org.aion.api.IAionAPI;
-import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.model.TxDetails;
-import org.satran.blockchain.graphql.exception.ConnectionException;
-import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
-import org.satran.blockchain.graphql.pool.ConnectionHelper;
+import org.satran.blockchain.graphql.service.BlockService;
 import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,38 +15,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class TxnServiceImpl implements TxnService{
+public class TxnServiceImpl implements TxnService {
 
     private static final Logger logger = LoggerFactory.getLogger(TxnServiceImpl.class);
 
-    @Autowired
-    private BlockServiceImpl chainService;
+    private BlockService chainService;
 
-    @Autowired
-    private ConnectionHelper connectionHelper;
+    private AionBlockchainAccessor accessor;
 
-    public TxnServiceImpl() {
-
+    public TxnServiceImpl(BlockService blockService, AionBlockchainAccessor accessor) {
+        this.chainService = blockService;
+        this.accessor = accessor;
     }
 
     public List<TxDetails> getTransactions(long fromBlock, long limit) {
         List<TxDetails> transactions = new ArrayList<TxDetails>();
 
-        if(logger.isDebugEnabled())
-         logger.debug("Getting transaction -----------");
+        if (logger.isDebugEnabled())
+            logger.debug("Getting transaction -----------");
 
-        if(fromBlock == -1) {
+        if (fromBlock == -1) {
             Block latestBlock = chainService.getLatestBlock();
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Return block " + latestBlock.getNumber());
 
-            if(latestBlock != null)
+            if (latestBlock != null)
                 fromBlock = latestBlock.getNumber();
 
         }
 
-        while (transactions.size() < limit) {
+        while (transactions.size() < limit && fromBlock >= 0) {
             Block blockDetails = chainService.getBlock(fromBlock);
 
             if (blockDetails == null)
@@ -69,25 +64,17 @@ public class TxnServiceImpl implements TxnService{
     }
 
     public Transaction getTransaction(Hash256 txHash) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Getting transaction for " + txHash);
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
-
-        try {
+        return accessor.call(((apiMsg, api) -> {
             apiMsg.set(api.getChain().getTransactionByHash(txHash));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the transaction" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Transaction details" + apiMsg.getObject());
 
             Transaction transaction = apiMsg.getObject();
@@ -101,9 +88,7 @@ public class TxnServiceImpl implements TxnService{
 //            return block;
 
             return transaction;
+        }));
 
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
     }
 }

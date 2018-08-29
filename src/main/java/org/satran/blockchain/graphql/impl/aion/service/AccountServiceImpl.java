@@ -1,7 +1,5 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
-import org.aion.api.IAionAPI;
-import org.aion.api.type.ApiMsg;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.base.type.Address;
@@ -9,13 +7,9 @@ import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.model.AccountKey;
 import org.satran.blockchain.graphql.model.AccountKeyExport;
 import org.satran.blockchain.graphql.model.input.AccountKeyExportInput;
-import org.satran.blockchain.graphql.exception.ConnectionException;
-import org.satran.blockchain.graphql.impl.aion.pool.AionConnection;
-import org.satran.blockchain.graphql.pool.ConnectionHelper;
 import org.satran.blockchain.graphql.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -30,83 +24,70 @@ public class AccountServiceImpl implements AccountService {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
-    @Autowired
-    private ConnectionHelper connectionHelper;
+    private AionBlockchainAccessor accessor;
+
+    private AccountServiceImpl(AionBlockchainAccessor accessor) {
+        this.accessor = accessor;
+    }
 
     @Override
     public List<AccountKey> accountCreate(List<String> passphrase, boolean privateKey) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Creating new account");
 
-        if(passphrase == null || passphrase.size() == 0)
+        if (passphrase == null || passphrase.size() == 0)
             return Collections.EMPTY_LIST;
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
-
-        try {
+        return accessor.call(((apiMsg, api) -> {
             apiMsg.set(api.getAccount().accountCreate(passphrase, privateKey));
             if (apiMsg.isError()) {
                 logger.error("Unable to create account" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Accounts created");
 
             List<Key> keys = apiMsg.getObject();
 
-            if(keys == null || keys.size() == 0)
+            if (keys == null || keys.size() == 0)
                 throw new RuntimeException("Account cannot be created");
 
             return keys.stream()
                     .map(k -> new AccountKey(k.getPassPhrase(), k.getPubKey().toString(), k.getPriKey().toString()))
                     .collect(Collectors.toList());
 
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
+        }));
 
     }
 
     @Override
     public AccountKeyExport accountExport(List<AccountKeyExportInput> keys) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Exporting accounts");
 
-        if(keys == null || keys.size() == 0)
+        if (keys == null || keys.size() == 0)
             return new AccountKeyExport(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
 
         List<Key> aionKeys = keys.stream()
                 .map(k -> new Key(Address.wrap(k.getPublicKey()), k.getPassphrase()))
                 .collect(Collectors.toList());
 
-        try {
+        return accessor.call(((apiMsg, api) -> {
+
             apiMsg.set(api.getAccount().accountExport(aionKeys));
             if (apiMsg.isError()) {
                 logger.error("Unable to export accounts" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Accounts exported");
 
             KeyExport exportKey = apiMsg.getObject();
 
-            if(exportKey == null)
+            if (exportKey == null)
                 throw new RuntimeException("Accounts cannot be exported");
 
             List<String> keyfiles = exportKey.getKeyFiles().stream()
@@ -121,45 +102,36 @@ public class AccountServiceImpl implements AccountService {
 
             return ake;
 
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
+        }));
 
     }
 
     @Override
     public AccountKeyExport accountBackup(List<AccountKeyExportInput> keys) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Backingup accounts");
 
-        if(keys == null || keys.size() == 0)
+        if (keys == null || keys.size() == 0)
             return new AccountKeyExport(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
 
         List<Key> aionKeys = keys.stream()
                 .map(k -> new Key(Address.wrap(k.getPublicKey()), k.getPassphrase()))
                 .collect(Collectors.toList());
 
-        try {
+        return accessor.call(((apiMsg, api) -> {
             apiMsg.set(api.getAccount().accountBackup(aionKeys));
             if (apiMsg.isError()) {
                 logger.error("Unable to backup accounts" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Accounts backup");
 
             KeyExport exportKey = apiMsg.getObject();
 
-            if(exportKey == null)
+            if (exportKey == null)
                 throw new RuntimeException("Accounts cannot be backedup");
 
             List<String> keyfiles = exportKey.getKeyFiles().stream()
@@ -174,31 +146,21 @@ public class AccountServiceImpl implements AccountService {
 
             return ake;
 
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
+        }));
 
     }
 
 
     @Override
     public boolean accountImport(String privateKey, String passphrase) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Importing account");
 
-        if(passphrase == null || privateKey == null)
+        if (passphrase == null || privateKey == null)
             throw new RuntimeException("Account with null passphrase or private key cannot be imported");
 
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
-
-        try {
+        return accessor.call(((apiMsg, api) -> {
             Map<String, String> keyMap = new HashMap<>();
             keyMap.put(privateKey, passphrase);
 
@@ -208,21 +170,17 @@ public class AccountServiceImpl implements AccountService {
                 throw new RuntimeException(apiMsg.getErrString());
             }
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Account cannot be imported");
 
             List<String> accounts = apiMsg.getObject();
 
-            if(accounts.size() != 0)
+            if (accounts.size() != 0)
                 return true;
             else
                 return false;
 
-
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
-
+        }));
     }
 
     @Override
@@ -231,7 +189,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account();
         account.setPublicKey(publicKey);
 
-        if(fields.contains("balance"))
+        if (fields.contains("balance"))
             account.setBalance(getBalance(publicKey, blockNumber));
 
         return account;
@@ -241,24 +199,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BigInteger getBalance(String publicKey, long blockNumber) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Getting balance for account: " + publicKey + "  at block number: " + blockNumber);
 
-        if(publicKey == null || publicKey.isEmpty())
+        if (publicKey == null || publicKey.isEmpty())
             throw new RuntimeException("Can't get balance for null account");
 
 
-        AionConnection connection = (AionConnection) connectionHelper.getConnection();
-
-        if(connection == null)
-            throw new ConnectionException("Connection could not be established");
-
-        IAionAPI api = connection.getApi();
-        ApiMsg apiMsg = connection.getApiMsg();
-
-        try {
-
-            if(blockNumber == -1) //get latest balance
+        return accessor.call(((apiMsg, api) -> {
+            if (blockNumber == -1) //get latest balance
                 apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey)));
             else
                 apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey), blockNumber));
@@ -272,9 +221,7 @@ public class AccountServiceImpl implements AccountService {
 
             return balance;
 
-        } finally {
-            connectionHelper.closeConnection(connection);
-        }
+        }));
 
     }
 }

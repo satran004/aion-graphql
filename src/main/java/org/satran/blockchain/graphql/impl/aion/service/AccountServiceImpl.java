@@ -3,6 +3,7 @@ package org.satran.blockchain.graphql.impl.aion.service;
 import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.base.type.Address;
+import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.model.AccountKey;
 import org.satran.blockchain.graphql.model.AccountKeyExport;

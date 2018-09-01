@@ -1,6 +1,7 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.type.Protocol;
+import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.NetInfo;
 import org.satran.blockchain.graphql.model.ProtocolInfo;

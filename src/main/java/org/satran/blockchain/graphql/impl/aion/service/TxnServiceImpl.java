@@ -1,14 +1,15 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
+import org.aion.api.type.CompileResponse;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
+import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.service.BlockService;
 import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -88,6 +89,24 @@ public class TxnServiceImpl implements TxnService {
 //            return block;
 
             return transaction;
+        }));
+
+    }
+
+    @Override
+    public CompileResponse compile(String code) {
+        if(logger.isDebugEnabled())
+            logger.debug("Trying to compile code");
+
+        return accessor.call(((apiMsg, api) -> {
+            apiMsg.set(api.getTx().compile(code));
+
+            if(apiMsg.isError()) {
+                logger.error("Error compiling contract source code");
+                throw new RuntimeException(apiMsg.getErrString());
+            }
+
+            return apiMsg.getObject();
         }));
 
     }

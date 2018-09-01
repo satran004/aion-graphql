@@ -1,6 +1,7 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.type.BlockDetails;
+import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.service.BlockService;

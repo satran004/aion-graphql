@@ -33,21 +33,6 @@ public class ModelConverter {
         return b;
     }
 
-    public static TxDetails convert(org.aion.api.type.TxDetails aionTxDetails) {
-        TxDetails tx = new TxDetails();
-
-        BeanUtils.copyProperties(aionTxDetails, tx);
-
-        tx.setTo(String.valueOf(aionTxDetails.getTo()));
-        tx.setFrom(String.valueOf(aionTxDetails.getFrom()));
-        tx.setContract(String.valueOf(aionTxDetails.getContract()));
-
-        tx.setTxHash(String.valueOf(aionTxDetails.getTxHash()));
-        tx.setData(String.valueOf(aionTxDetails.getData()));
-
-        return  tx;
-    }
-
     public static Block convert(org.aion.api.type.Block aionBlock) {
         Block block = new Block();
 
@@ -65,6 +50,34 @@ public class ModelConverter {
         block.setSize(aionBlock.getSize());
 
         return block;
+    }
+
+    public static TxDetails convert(org.aion.api.type.TxDetails aionTxDetails) {
+        TxDetails tx = new TxDetails();
+
+        BeanUtils.copyProperties(aionTxDetails, tx);
+
+        tx.setTo(String.valueOf(aionTxDetails.getTo()));
+        tx.setFrom(String.valueOf(aionTxDetails.getFrom()));
+        tx.setContract(String.valueOf(aionTxDetails.getContract()));
+
+        tx.setTxHash(String.valueOf(aionTxDetails.getTxHash()));
+        tx.setData(String.valueOf(aionTxDetails.getData()));
+
+        return  tx;
+    }
+
+    public static TxDetails convert(org.aion.api.type.Transaction aionTx) {
+        TxDetails tx = new TxDetails();
+
+        BeanUtils.copyProperties(aionTx, tx);
+
+        tx.setTo(String.valueOf(aionTx.getTo()));
+        tx.setFrom(String.valueOf(aionTx.getFrom()));
+        tx.setTxHash(String.valueOf(aionTx.getTxHash()));
+        tx.setData(String.valueOf(aionTx.getData()));
+
+        return  tx;
     }
 
     public static ProtocolInfo convert(Protocol aionProtocol) {

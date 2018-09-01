@@ -22,15 +22,6 @@ public class NetServiceImpl implements NetService {
     }
 
     @Override
-    public NetInfo getNetworkInfo() {
-        NetInfo netInfo = new NetInfo();
-        netInfo.setSyncing(isSyncing());
-        netInfo.setProtocol(getProtocol());
-
-        return netInfo;
-    }
-
-    @Override
     public boolean isSyncing() {
         if (logger.isDebugEnabled())
             logger.debug("Getting sync info");

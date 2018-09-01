@@ -1,26 +1,109 @@
 type Query {
-    blocks(first: Long = 10, offset: Long = -1): [Block]
-    block(number: Long!): Block
-    transaction(txHash: Hash256!): Transaction
-    transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
 
-    account(publicKey: String!, blockNumber: Long = -1) : Account
+    blockApi: BlockQuery
 
-    netInfo: NetInfo
+    txnApi: TxnQuery
+
+    accountApi: AccountQuery
+
+    adminApi: AdminQuery
+
+    chainApi: ChainQuery
+
+    netApi: NetQuery
+
+    walletApi: WalletQuery
 }
 
 type Mutation {
 
+    accountApi: AccountMutator
+
+    #compile(code: String): CompileResponse
+
+    #Wallet api
+    walletApi: WalletMutator
+}
+
+type BlockQuery {
+    blocks(first: Long = 10, offset: Long = -1): [Block]
+    block(number: Long!): Block
+}
+
+type TxnQuery {
+    transaction(txHash: String!): TxDetails
+    transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
+}
+
+type AccountQuery {
+    account(publicKey: String!, blockNumber: Long = -1) : Account
+}
+
+type AdminQuery {
+    accountsByAddressString(addresses: String!): [Account]
+    accounts(addresses: [String]!): [Account]
+
+    #blockByHash(hash: String!): Block
+    blockByNumber(number: Long!): Block
+
+    blocksByLatest(count: Long!): [Block]
+    blocksByNumber(numbers: [Long]!): [Block]
+    blocksByRange(blockStart: Long!, blockEnd: Long!): [Block]
+
+    blocks(first: Long!, offset: Long!): [Block]
+}
+
+type ChainQuery {
+    blockNumber: Long
+    balance(address: String!): BigInteger
+    balanceByBlockNumber(address: String!, blockNumber: Long!): BigInteger
+
+    blockByHash(hash: String!): Block
+    blockByNumber(number: Long!): Block
+
+    blockTransactionCountByHash(hash: String!): Long
+    blockTransactionCountByNumber(number: Long!): Long
+
+    nonce(address: String!): BigInteger
+    #storageAt(address: String!, postion: Int): String
+    #storageAtByBlockNumber(address: String!, blockNumber: Long!, postion: Int): String
+
+    transactionByBlockNumberAndIndex(blockNumber: Long!, index: Long!): TxDetails
+    transactionByHash(txHash: String!): TxDetails
+    transactionCount(addres: String!, blockNumber: Long!): Long
+
+}
+
+type NetQuery {
+    isSyncing: Boolean
+    protocol: Protocol
+    # activeNodes: [NodeInfo]
+}
+
+type WalletQuery {
+    #Wallet service apis
+    accounts: [String]
+    defaultAccount: String
+    minerAccount: String
+}
+
+#For mutation
+type AccountMutator {
     accountCreate(passphrase: [String!], privateKey: Boolean = false): [AccountKey]
     accountExport(keys: [AccountKeyExportInput!]): AccountKeyExport
     accountBackup(keys: [AccountKeyExportInput!]): AccountKeyExport
     #Return list of accounts which cannot be imported
     accountImport(privateKey: String!, passphrase: String!): Boolean
-
 }
 
-scalar Hash256
-scalar Address
+type WalletMutator {
+    lockAccount(accountAddress: String!, passphrase: String!): Boolean
+    unlockAccount(accountAddress: String!, passphrase: String!, duration: Int = 60): Boolean
+}
+
+
+#scalar Hash256
+#scalar Address
 
 #type Block {
 #    number: Long
@@ -63,20 +146,20 @@ type Block {
 }
 
 
-type Transaction {
-    transactionIndex: Int
-    blockNumber: Long
-    timeStamp: Long
-    nrgConsumed: Long
-    nrgPrice: Long
-    from: Address
-    to: Address
-    blockHash: Hash256
-    txHash: Hash256
-    nonce: BigInteger
-    value: BigInteger
-    data: String #ByteArrayWrapper
-}
+#type Transaction {
+#    transactionIndex: Int
+#    blockNumber: Long
+#    timeStamp: Long
+#    nrgConsumed: Long
+#    nrgPrice: Long
+#    from: Address
+#    to: Address
+#    blockHash: Hash256
+#    txHash: Hash256
+#    nonce: BigInteger
+#    value: BigInteger
+#    data: String #ByteArrayWrapper
+#}
 
 #type TxDetails {
 #    from: Address
@@ -131,13 +214,6 @@ input AccountKeyExportInput {
 }
 
 
-type NetInfo {
-    isSyncing: Boolean
-    protocol: Protocol
-   # activeNodes: [NodeInfo]
-
-}
-
 type Protocol {
     api: String
     db: String
@@ -146,4 +222,37 @@ type Protocol {
     net: String
     txpool: String
     vm: String
+}
+
+#contract
+type CompileResponse {
+    abiDefinition: [ContractAbiEntry]
+    abiDefString: String
+    code: String
+    compilerOptions: String
+    compilerVersion: String
+  #  developerDoc: String
+    language: String
+    languageVersion: String
+    source: String
+   # userDoc: String
+}
+
+type ContractAbiEntry {
+    anonymous: Boolean
+    constant: Boolean
+    inputs: [ContractAbiIOParam]
+    name: String
+    outputs: [ContractAbiIOParam]
+    payable: Boolean
+    type: String
+
+}
+
+type ContractAbiIOParam {
+    name: String
+    paramLengths: [Int]
+    type: String
+    indexed: Boolean
+
 }

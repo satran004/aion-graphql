@@ -6,6 +6,7 @@ import java.util.List;
 public class Account {
 
     private String publicKey;
+
     private BigInteger balance;
 
     private List<TxDetails> transactions;

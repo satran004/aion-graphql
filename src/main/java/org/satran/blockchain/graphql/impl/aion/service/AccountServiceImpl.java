@@ -9,6 +9,7 @@ import org.satran.blockchain.graphql.model.AccountKey;
 import org.satran.blockchain.graphql.model.AccountKeyExport;
 import org.satran.blockchain.graphql.model.input.AccountKeyExportInput;
 import org.satran.blockchain.graphql.service.AccountService;
+import org.satran.blockchain.graphql.service.ChainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -27,8 +28,11 @@ public class AccountServiceImpl implements AccountService {
 
     private AionBlockchainAccessor accessor;
 
-    private AccountServiceImpl(AionBlockchainAccessor accessor) {
+    private ChainService chainService;
+
+    private AccountServiceImpl(AionBlockchainAccessor accessor, ChainService chainService) {
         this.accessor = accessor;
+        this.chainService = chainService;
     }
 
     @Override
@@ -200,29 +204,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BigInteger getBalance(String publicKey, long blockNumber) {
-        if (logger.isDebugEnabled())
-            logger.debug("Getting balance for account: " + publicKey + "  at block number: " + blockNumber);
-
-        if (publicKey == null || publicKey.isEmpty())
-            throw new RuntimeException("Can't get balance for null account");
-
-
-        return accessor.call(((apiMsg, api) -> {
-            if (blockNumber == -1) //get latest balance
-                apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey)));
-            else
-                apiMsg.set(api.getChain().getBalance(Address.wrap(publicKey), blockNumber));
-
-            if (apiMsg.isError()) {
-                logger.error("Unable to get balance for account {} : " + apiMsg.getErrString(), publicKey);
-                throw new RuntimeException(apiMsg.getErrString());
-            }
-
-            BigInteger balance = apiMsg.getObject();
-
-            return balance;
-
-        }));
-
+        return chainService.getBalance(publicKey, blockNumber);
     }
 }

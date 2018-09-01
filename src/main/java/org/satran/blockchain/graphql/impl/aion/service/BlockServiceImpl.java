@@ -1,121 +1,42 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
-import org.aion.api.type.BlockDetails;
-import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
-import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.service.AdminService;
 import org.satran.blockchain.graphql.service.BlockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class BlockServiceImpl implements BlockService {
 
     private static final Logger logger = LoggerFactory.getLogger(BlockServiceImpl.class);
 
-    private AionBlockchainAccessor accessor;
+    private AdminService adminService;
 
-    public BlockServiceImpl(AionBlockchainAccessor accessor) {
-        this.accessor = accessor;
+    public BlockServiceImpl(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     public  List<Block> getBlocks(Long first, long offset) {
-
-
-        if(first > 30)
-            throw new RuntimeException("Too many blocks. You can only request upto 30 blocks in a call");
-
-
-        //Find the latest block number if the blocknumber is not passed
-       /* if(offset == -1) {
-
-            long bn = accessor.call(((apiMsg, api) -> {
-                apiMsg.set(api.getChain().blockNumber());
-                if (apiMsg.isError()) {
-                    logger.error("Get blockNumber isError: " + apiMsg.getErrString());
-                }
-
-                return api.getChain().blockNumber().getObject();
-            }));
-        }*/
-
-
-        return accessor.call(((apiMsg, api) -> {
-
-            if (offset == -1)
-                apiMsg.set(api.getAdmin().getBlockDetailsByLatest(first));
-            else {
-                apiMsg.set(api.getAdmin().getBlockDetailsByRange(offset - first, offset));
-            }
-
-            if (apiMsg.isError()) {
-                logger.error("Error getting block details" + apiMsg.getErrString());
-            }
-
-            List<BlockDetails> block = (List<BlockDetails>) apiMsg.getObject();
-
-            if (logger.isDebugEnabled())
-                logger.debug("Result: " + block.toString());
-
-            return block.stream()
-                    .map(blockDetails -> ModelConverter.convert(blockDetails))
-                    .collect(Collectors.toList());
-
-        }));
-
+        return adminService.getBlocks(first, offset);
     }
 
     public Block getBlock(long number) {
 
-        if(logger.isDebugEnabled())
-            logger.debug("Getting block for " + number);
-
-        return accessor.call(((apiMsg, api) -> {
-
-            apiMsg.set(api.getAdmin().getBlockDetailsByNumber(String.valueOf(number)));
-            if (apiMsg.isError()) {
-                logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
-            }
-
-            if (logger.isDebugEnabled())
-                logger.debug("Block details got" + apiMsg.getObject().getClass());
-
-            List<BlockDetails> blkDetails = ((List<BlockDetails>) apiMsg.getObject());
-
-            if (blkDetails == null || blkDetails.size() == 0)
-                throw new RuntimeException("No block found with number : " + number);
-
-            BlockDetails block = blkDetails.get(0);
-
-            Block b = ModelConverter.convert(block);
-            return b;
-        }));
+        return adminService.getBlockDetailsByNumber(number);
     }
 
     public Block getLatestBlock() {
 
-        return accessor.call(((apiMsg, api) -> {
-            if (logger.isDebugEnabled())
-                logger.debug("Getting latest block");
+        List<Block> blocks = adminService.getBlockDetailsByLatest(1L);
 
-            apiMsg.set(api.getAdmin().getBlocksByLatest(1L));
-
-            if (apiMsg.isError()) {
-                logger.error("Unable to get the latest block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
-            }
-
-            org.aion.api.type.Block aionBlock = ((List<org.aion.api.type.Block>) apiMsg.getObject()).get(0);
-
-            System.out.println("*** " + aionBlock.toString() + " *** " + aionBlock.getHash() + "  " + aionBlock.getNumber());
-            Block b = ModelConverter.convert(aionBlock);
-            return b;
-        }));
+        if(blocks != null && blocks.size() > 0)
+            return blocks.get(0);
+        else
+            throw new RuntimeException("Latet block not found");
     }
 
 }

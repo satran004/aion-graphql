@@ -5,8 +5,6 @@ import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
-import org.aion.base.type.Address;
-import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.exception.CoercingParseLiteralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,7 @@ public class ChainGQLAutoConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ChainGQLAutoConfiguration.class);
 
-    public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
+   /*public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 
         public Object serialize(Object dataFetcherResult) {
 
@@ -96,6 +94,6 @@ public class ChainGQLAutoConfiguration {
     public GraphQLScalarType hash256Type() {
         return hash256;
     }
-
+*/
 
 }

@@ -4,6 +4,7 @@ import org.aion.api.type.CompileResponse;
 import org.aion.api.type.Transaction;
 import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.service.BlockService;
@@ -64,12 +65,12 @@ public class TxnServiceImpl implements TxnService {
 
     }
 
-    public Transaction getTransaction(Hash256 txHash) {
+    public TxDetails getTransaction(String txHash) {
         if (logger.isDebugEnabled())
-            logger.debug("Getting transaction for " + txHash);
+            logger.debug("Getting transaction for {} ", txHash);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getChain().getTransactionByHash(txHash));
+            apiMsg.set(api.getChain().getTransactionByHash(Hash256.wrap(txHash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the transaction" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
@@ -80,7 +81,7 @@ public class TxnServiceImpl implements TxnService {
 
             Transaction transaction = apiMsg.getObject();
 
-
+            return ModelConverter.convert(transaction);
 //            if(blkDetails == null || blkDetails.size() == 0)
 //                throw new RuntimeException("No block found with number : " + number);
 //
@@ -88,12 +89,11 @@ public class TxnServiceImpl implements TxnService {
 //
 //            return block;
 
-            return transaction;
+
         }));
 
     }
 
-    @Override
     public CompileResponse compile(String code) {
         if(logger.isDebugEnabled())
             logger.debug("Trying to compile code");

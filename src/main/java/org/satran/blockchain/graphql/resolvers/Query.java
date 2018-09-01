@@ -1,24 +1,10 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
-import org.aion.api.type.Transaction;
-import org.aion.base.type.Hash256;
-import org.satran.blockchain.graphql.model.Account;
-import org.satran.blockchain.graphql.model.Block;
-import org.satran.blockchain.graphql.model.NetInfo;
-import org.satran.blockchain.graphql.model.TxDetails;
-import org.satran.blockchain.graphql.exception.DataFetchingException;
-import org.satran.blockchain.graphql.service.AccountService;
-import org.satran.blockchain.graphql.service.BlockService;
-import org.satran.blockchain.graphql.service.NetService;
-import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class Query implements GraphQLQueryResolver {
@@ -26,75 +12,53 @@ public class Query implements GraphQLQueryResolver {
     private static final Logger logger = LoggerFactory.getLogger(Query.class);
 
     @Autowired
-    private BlockService blockService;
+    private BlockResolver blockResolver;
 
     @Autowired
-    private TxnService txnService;
+    private TxnResolver txnResolver;
 
     @Autowired
-    private AccountService accountService;
+    private AccountResolver accountResolver;
 
     @Autowired
-    private NetService netService;
+    private AdminResolver adminResolver;
+
+    @Autowired
+    private ChainResolver chainResolver;
+
+    @Autowired
+    private NetInfoResolver netInfoResolver;
+
+    @Autowired
+    private WalletResolver walletResolver;
 
 
-    public List<Block> blocks(long first, long offset) {
-        try {
-            return blockService.getBlocks(first, offset);
-        } catch (Exception e) {
-            logger.error("Error getting blocks", e);
-            throw new DataFetchingException(e.getMessage());
-        }
-
+    public BlockResolver blockApi() {
+        return blockResolver;
     }
 
-    public Block block(long number) {
-        try {
-            return blockService.getBlock(number);
-        } catch(Exception e) {
-            logger.error("Error getting block ", e);
-            throw new DataFetchingException(e.getMessage());
-        }
+    public TxnResolver txnApi() {
+        return txnResolver;
     }
 
-    public Transaction transaction(Hash256 txHash) {
-        try {
-            return txnService.getTransaction(txHash);
-        } catch (Exception e) {
-            logger.error("Error getting transaction", e);
-            throw new DataFetchingException(e.getMessage());
-        }
+    public AccountResolver accountApi() {
+        return accountResolver;
     }
 
-    public List<TxDetails> transactions(long fromBlock, long limit) {
-        try {
-            return txnService.getTransactions(fromBlock, limit);
-        } catch (Exception e) {
-            logger.error("Error getting transactions", e);
-            throw new DataFetchingException(e.getMessage());
-        }
+    public AdminResolver adminApi() {
+        return adminResolver;
     }
 
-    public Account account(String publicKey, long blockNumber) {
-        try {
-            List<String> fields = new ArrayList<>();
-            fields.add("balance");
-
-            return accountService.getAccount(publicKey, fields, blockNumber);
-        } catch (Exception e) {
-            logger.error("Error getting transaction", e);
-            throw new DataFetchingException(e.getMessage());
-        }
+    public ChainResolver chainApi() {
+        return chainResolver;
     }
 
-    public NetInfo netInfo() {
+    public NetInfoResolver netApi() {
+        return netInfoResolver;
+    }
 
-        try {
-            return netService.getNetworkInfo();
-        } catch (Exception e) {
-            logger.error("Error getting network info");
-            throw new DataFetchingException(e.getMessage());
-        }
+    public WalletResolver walletApi() {
+        return walletResolver;
     }
 
 }

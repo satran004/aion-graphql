@@ -17,6 +17,9 @@ public class TxDetails {
     private Long timestamp;
     private String error;
 
+    private long blockNumber;
+    private String blockHash;
+
     public String getFrom() {
         return from;
     }
@@ -111,5 +114,21 @@ public class TxDetails {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public long getBlockNumber() {
+        return blockNumber;
+    }
+
+    public void setBlockNumber(long blockNumber) {
+        this.blockNumber = blockNumber;
+    }
+
+    public String getBlockHash() {
+        return blockHash;
+    }
+
+    public void setBlockHash(String blockHash) {
+        this.blockHash = blockHash;
     }
 }

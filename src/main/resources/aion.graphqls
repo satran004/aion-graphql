@@ -19,9 +19,6 @@ type Mutation {
 
     accountApi: AccountMutator
 
-    #compile(code: String): CompileResponse
-
-    #Wallet api
     walletApi: WalletMutator
 
     txnApi: TxnMutator
@@ -196,6 +193,8 @@ type TxDetails {
     contract: String
     timestamp: Long
     error: String
+    blockNumber: Long
+    blockHash: String
 }
 
 type Account {

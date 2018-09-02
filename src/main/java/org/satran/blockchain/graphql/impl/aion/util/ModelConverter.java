@@ -29,8 +29,13 @@ public class ModelConverter {
         b.setSize(blockDetails.getSize());
 
         b.setTxDetails(blockDetails.getTxDetails().stream()
-                .map(txDetails -> ModelConverter.convert(txDetails))
-                .collect(Collectors.toList()));
+                .map(txDetails -> {
+                   TxDetails txD =  ModelConverter.convert(txDetails);
+                   txD.setBlockHash(b.getHash());
+                   txD.setBlockNumber(b.getNumber());
+
+                   return txD;
+                }).collect(Collectors.toList()));
 
         return b;
     }
@@ -78,6 +83,9 @@ public class ModelConverter {
         tx.setFrom(String.valueOf(aionTx.getFrom()));
         tx.setTxHash(String.valueOf(aionTx.getTxHash()));
         tx.setData(String.valueOf(aionTx.getData()));
+
+        tx.setBlockNumber(aionTx.getBlockNumber());
+        tx.setBlockHash(String.valueOf(aionTx.getBlockHash()));
 
         return  tx;
     }

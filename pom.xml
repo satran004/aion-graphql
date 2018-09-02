@@ -76,18 +76,10 @@
 		<dependency>
 			<groupId>org.aion</groupId>
 			<artifactId>libAion</artifactId>
-			<version>1.0</version>
+			<version>0.11</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/libAionApi-v0.1.9.75f2e8c-2018-06-14.jar</systemPath>
+			<systemPath>${basedir}/lib/libAionApi-v0.1.11.3da0679-2018-08-17.jar</systemPath>
 		</dependency>
-		<dependency>
-			<groupId>org.aion</groupId>
-			<artifactId>modAionApi</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/modAionApi-v0.1.9.75f2e8c-2018-06-14.jar</systemPath>
-		</dependency>
-
 
 		<dependency>
 			<groupId>commons-collections</groupId>

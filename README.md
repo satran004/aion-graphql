@@ -1,23 +1,31 @@
 <H1>GraphQL interface for Aion Blockchain</H1> 
 <a href="https://travis-ci.org/satran004/aion-graphql"><img src="https://travis-ci.org/satran004/aion-graphql.svg?branch=master"/></a>
 
-Demo Setup: http://graphql.aion-tools.info/graphiql
+Demo: http://graphql.aion-tools.info/graphiql
+
+API Doc: <a href="https://satran004.github.io/aion-graphql-docs/www/"> Aion GraphQL API </a>
 
 This project provides GraphQL REST endpoint to query Aion blockchain.
 It is using AION java api to communicate with Aion blockchain.
 
 
-<b>Requirement:</b>
-- Ubuntu 16.04 LTS and above
+<b>Tested on:</b>
+- Ubuntu 16.04 LTS, MacOS
 - Java 10.x
 
-The implementation is in very early stage.
+This project is under active development. 
 
-Currently, only the following read-only operations are supported:
-- Get blocks
-- Get block by hash
-- Get Transaction by hash
+The following apis are currently supported :
 
+- blockApi
+- txnApi
+- accountApi
+- adminApi
+- chainApi
+- netApi
+- walletApi
+
+For detail information, please visit this <a href="https://satran004.github.io/aion-graphql-docs/www/"> API page </a>
 
 The project will be enhanced to support other read and write operations.
 

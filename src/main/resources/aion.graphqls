@@ -23,6 +23,8 @@ type Mutation {
 
     #Wallet api
     walletApi: WalletMutator
+
+    txnApi: TxnMutator
 }
 
 type BlockQuery {
@@ -99,6 +101,11 @@ type AccountMutator {
 type WalletMutator {
     lockAccount(accountAddress: String!, passphrase: String!): Boolean
     unlockAccount(accountAddress: String!, passphrase: String!, duration: Int = 60): Boolean
+}
+
+type TxnMutator {
+    compile(code: String!): CompileResponse
+    sendTransaction(txArgs: TxArgsInput!): MsgResp
 }
 
 
@@ -226,7 +233,7 @@ type Protocol {
 
 #contract
 type CompileResponse {
-    abiDefinition: [ContractAbiEntry]
+   # abiDefinition: [ContractAbiEntry]
     abiDefString: String
     code: String
     compilerOptions: String
@@ -255,4 +262,24 @@ type ContractAbiIOParam {
     type: String
     indexed: Boolean
 
+}
+
+#Txn input
+input TxArgsInput {
+    from: String
+    to: String
+    value: BigInteger
+    data: String
+    nonce: BigInteger
+    nrgLimit: Long
+    nrgPrice: Long
+}
+
+type MsgResp {
+    status: String
+    msgHash: String
+    txHash: String
+    txResult: String
+    txDeploy: String
+    error: String
 }

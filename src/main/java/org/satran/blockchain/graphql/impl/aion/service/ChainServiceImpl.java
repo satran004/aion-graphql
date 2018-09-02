@@ -189,9 +189,9 @@ public class ChainServiceImpl implements ChainService{
     }
 
     @Override
-    public String getStorageAt(String address, int position) { //TODO implementation
-        return "";
-        /*if(logger.isDebugEnabled())
+    public String getStorageAt(String address, int position) {
+
+        if(logger.isDebugEnabled())
             logger.debug("Getting storage for " + address);
 
         return accessor.call(((apiMsg, api) -> {
@@ -206,13 +206,13 @@ public class ChainServiceImpl implements ChainService{
                 logger.debug("Got storage for the address " + apiMsg.getObject().getClass());
 
             return apiMsg.getObject();
-        }));*/
+        }));
     }
 
     @Override
-    public String getStorageAt(String address, int position, long blockNumber) { //TODO implementation
-        return "";
-        /*if(logger.isDebugEnabled())
+    public String getStorageAt(String address, int position, long blockNumber) {
+
+        if(logger.isDebugEnabled())
             logger.debug("Getting storage for " + address);
 
         return accessor.call(((apiMsg, api) -> {
@@ -227,7 +227,7 @@ public class ChainServiceImpl implements ChainService{
                 logger.debug("Got storage for the address " + apiMsg.getObject().getClass());
 
             return apiMsg.getObject();
-        }));*/
+        }));
     }
 
     @Override

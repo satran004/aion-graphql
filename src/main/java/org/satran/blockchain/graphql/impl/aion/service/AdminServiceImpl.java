@@ -3,6 +3,7 @@ package org.satran.blockchain.graphql.impl.aion.service;
 import org.aion.api.type.AccountDetails;
 import org.aion.api.type.BlockDetails;
 import org.aion.base.type.Address;
+import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Account;
@@ -90,14 +91,13 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Block getBlockDetailsByHash(String hash) {
-        //TODO
-        throw new UnsupportedOperationException("Not implemented in this version");
-       /* if(logger.isDebugEnabled())
+
+       if(logger.isDebugEnabled())
             logger.debug("Getting block for {}", hash);
 
         return accessor.call(((apiMsg, api) -> {
 
-            apiMsg.set(api.getAdmin().getBlockDetailsByHash(hash));
+            apiMsg.set(api.getAdmin().getBlockDetailsByHash(Hash256.wrap(hash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
                 throw new RuntimeException(apiMsg.getErrString());
@@ -115,7 +115,7 @@ public class AdminServiceImpl implements AdminService {
 
             Block b = ModelConverter.convert(block);
             return b;
-        }));*/
+        }));
     }
 
     @Override

@@ -1,8 +1,10 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
 import org.aion.api.type.BlockDetails;
+import org.aion.api.type.MsgRsp;
 import org.aion.api.type.Protocol;
 import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.MsgRespBean;
 import org.satran.blockchain.graphql.model.ProtocolInfo;
 import org.satran.blockchain.graphql.model.TxDetails;
 import org.springframework.beans.BeanUtils;
@@ -86,5 +88,18 @@ public class ModelConverter {
         BeanUtils.copyProperties(aionProtocol, protocolInfo);
 
         return protocolInfo;
+    }
+
+    public static MsgRespBean convert(MsgRsp aMsgResp) {
+        MsgRespBean resp = new MsgRespBean();
+
+        resp.setError(aMsgResp.getError());
+        resp.setMsgHash(String.valueOf(aMsgResp.getMsgHash()));
+        resp.setStatus(String.valueOf(aMsgResp.getStatus()));
+        resp.setTxDeploy(String.valueOf(aMsgResp.getTxDeploy()));
+        resp.setTxHash(String.valueOf(aMsgResp.getTxHash()));
+        resp.setTxResult(String.valueOf(aMsgResp.getTxResult()));
+
+        return resp;
     }
 }

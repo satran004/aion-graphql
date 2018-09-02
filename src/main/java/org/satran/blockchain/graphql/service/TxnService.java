@@ -1,6 +1,9 @@
 package org.satran.blockchain.graphql.service;
 
+import org.satran.blockchain.graphql.model.CompileResponseBean;
+import org.satran.blockchain.graphql.model.MsgRespBean;
 import org.satran.blockchain.graphql.model.TxDetails;
+import org.satran.blockchain.graphql.model.input.TxArgsInput;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +14,8 @@ public interface TxnService {
 
     public TxDetails getTransaction(String txHash);
 
-  //  public CompileResponse compile(String code);
+    public CompileResponseBean compile(String code);
+
+    public MsgRespBean sendTransaction(TxArgsInput txArgsInput);
 
 }

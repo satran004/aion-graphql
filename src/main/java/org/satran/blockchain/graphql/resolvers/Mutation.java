@@ -1,20 +1,10 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
-import org.aion.api.type.CompileResponse;
-import org.satran.blockchain.graphql.exception.DataFetchingException;
-import org.satran.blockchain.graphql.model.AccountKey;
-import org.satran.blockchain.graphql.model.AccountKeyExport;
-import org.satran.blockchain.graphql.model.input.AccountKeyExportInput;
-import org.satran.blockchain.graphql.service.AccountService;
-import org.satran.blockchain.graphql.service.TxnService;
-import org.satran.blockchain.graphql.service.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class Mutation implements GraphQLMutationResolver {
@@ -27,6 +17,9 @@ public class Mutation implements GraphQLMutationResolver {
     @Autowired
     private AccountMutator accountMutator;
 
+    @Autowired
+    private TxnMutator txnMutator;
+
     public AccountMutator accountApi() {
         return accountMutator;
     }
@@ -35,4 +28,7 @@ public class Mutation implements GraphQLMutationResolver {
         return walletMutator;
     }
 
+    public TxnMutator txnApi() {
+        return txnMutator;
+    }
 }

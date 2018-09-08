@@ -1,7 +1,10 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import org.satran.blockchain.graphql.exception.DataFetchingException;
+import org.satran.blockchain.graphql.model.MsgRespBean;
 import org.satran.blockchain.graphql.model.TxDetails;
+import org.satran.blockchain.graphql.model.TxReceiptBean;
+import org.satran.blockchain.graphql.model.input.TxArgsInput;
 import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,4 +40,36 @@ public class TxnResolver {
             throw new DataFetchingException(e.getMessage());
         }
     }
+
+    public long estimateNrg(String code) {
+        return txnService.estimateNrg(code);
+    }
+
+    public long estimateNrgByTxArgs(TxArgsInput argsInput) {
+        return txnService.estimateNrg(argsInput);
+    }
+
+    public String code(String address, long blockNumber) {
+        if(blockNumber == -1)
+            return txnService.getCode(address);
+        else
+            return txnService.getCode(address, blockNumber);
+    }
+
+    public MsgRespBean msgStatus(String msgHash) {
+        return txnService.getMsgStatus(msgHash);
+    }
+
+    public long nrgPrice() {
+        return txnService.getNrgPrice();
+    }
+
+    public String solcVersion() {
+        return txnService.getSolcVersion();
+    }
+
+    public TxReceiptBean txReceipt(String txnHash) {
+        return txnService.getTxReceipt(txnHash);
+    }
+
 }

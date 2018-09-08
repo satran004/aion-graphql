@@ -4,7 +4,9 @@ import java.util.List;
 
 public class CompileResponseBean {
 
-    private List<ContractAbiEntry> abiDefinition;
+    private String contractName;
+
+    private List<ContractAbiEntryBean> abiDefinition;
     private String abiDefString;
     private String code;
     private String compilerOptions;
@@ -16,11 +18,19 @@ public class CompileResponseBean {
 //    private String userDoc; //TODO
 
 
-    public List<ContractAbiEntry> getAbiDefinition() {
+    public String getContractName() {
+        return contractName;
+    }
+
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
+    }
+
+    public List<ContractAbiEntryBean> getAbiDefinition() {
         return abiDefinition;
     }
 
-    public void setAbiDefinition(List<ContractAbiEntry> abiDefinition) {
+    public void setAbiDefinition(List<ContractAbiEntryBean> abiDefinition) {
         this.abiDefinition = abiDefinition;
     }
 
@@ -79,84 +89,121 @@ public class CompileResponseBean {
     public void setSource(String source) {
         this.source = source;
     }
+
+
+    public static class ContractAbiEntryBean {
+
+        private boolean anonymous;
+        private boolean constant;
+        private List<ContractAbiIOParamBean> inputs;
+        private String name;
+        private List<ContractAbiIOParamBean> outputs;
+        private boolean payable;
+        private String type;
+
+        public boolean isAnonymous() {
+            return anonymous;
+        }
+
+        public void setAnonymous(boolean anonymous) {
+            this.anonymous = anonymous;
+        }
+
+        public boolean isConstant() {
+            return constant;
+        }
+
+        public void setConstant(boolean constant) {
+            this.constant = constant;
+        }
+
+        public List<ContractAbiIOParamBean> getInputs() {
+            return inputs;
+        }
+
+        public void setInputs(List<ContractAbiIOParamBean> inputs) {
+            this.inputs = inputs;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<ContractAbiIOParamBean> getOutputs() {
+            return outputs;
+        }
+
+        public void setOutputs(List<ContractAbiIOParamBean> outputs) {
+            this.outputs = outputs;
+        }
+
+        public boolean isPayable() {
+            return payable;
+        }
+
+        public void setPayable(boolean payable) {
+            this.payable = payable;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+    }
+
+    public static class ContractAbiIOParamBean {
+
+        private String name;
+        private List<Integer> paramLengths;
+        private String type;
+        private boolean indexed;
+
+        public ContractAbiIOParamBean(String name, List<Integer> paramLengths, String type, boolean indexed) {
+            this.name = name;
+            this.paramLengths = paramLengths;
+            this.type = type;
+            this.indexed = indexed;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public List<Integer> getParamLengths() {
+            return paramLengths;
+        }
+
+        public void setParamLengths(List<Integer> paramLengths) {
+            this.paramLengths = paramLengths;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public boolean isIndexed() {
+            return indexed;
+        }
+
+        public void setIndexed(boolean indexed) {
+            this.indexed = indexed;
+        }
+    }
+
 }
 
-class ContractAbiEntry {
-
-    private String hashed;
-    private boolean constructor;
-    private boolean event;
-    private boolean fallback;
-
-    public String getHashed() {
-        return hashed;
-    }
-
-    public void setHashed(String hashed) {
-        this.hashed = hashed;
-    }
-
-    public boolean isConstructor() {
-        return constructor;
-    }
-
-    public void setConstructor(boolean constructor) {
-        this.constructor = constructor;
-    }
-
-    public boolean isEvent() {
-        return event;
-    }
-
-    public void setEvent(boolean event) {
-        this.event = event;
-    }
-
-    public boolean isFallback() {
-        return fallback;
-    }
-
-    public void setFallback(boolean fallback) {
-        this.fallback = fallback;
-    }
-}
-
-class ContractAbiIOParam {
-
-    private String name;
-    private List<Integer> paramLengths;
-    private String type;
-    private boolean indexed;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Integer> getParamLengths() {
-        return paramLengths;
-    }
-
-    public void setParamLengths(List<Integer> paramLengths) {
-        this.paramLengths = paramLengths;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isIndexed() {
-        return indexed;
-    }
-
-    public void setIndexed(boolean indexed) {
-        this.indexed = indexed;
-    }
-}

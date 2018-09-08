@@ -1,0 +1,8 @@
+rpc:
+  endpoint: "tcp://localhost:8547"
+
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    corsEnabled: true

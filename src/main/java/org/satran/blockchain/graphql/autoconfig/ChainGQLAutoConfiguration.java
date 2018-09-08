@@ -1,16 +1,21 @@
 package org.satran.blockchain.graphql.autoconfig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oembedler.moon.graphql.boot.GraphQLJavaToolsAutoConfiguration;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
+import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 import org.satran.blockchain.graphql.exception.CoercingParseLiteralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Map;
 
 @Configuration
 @AutoConfigureBefore(GraphQLJavaToolsAutoConfiguration.class)
@@ -18,6 +23,63 @@ public class ChainGQLAutoConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ChainGQLAutoConfiguration.class);
 
+
+
+    public static final GraphQLScalarType MAP = new GraphQLScalarType("Map", "A custom map scalar type", new Coercing() {
+        @Override
+        public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
+            Map map = null;
+            try {
+                map = Map.class.cast(dataFetcherResult);
+            } catch (ClassCastException exception) {
+                throw new CoercingSerializeException("Could not convert " + dataFetcherResult + " into a Map", exception);
+            }
+            return map;
+        }
+
+        @Override
+        public Object parseValue(Object input) throws CoercingParseValueException {
+            logger.warn("parseValue called");
+            return null;
+        }
+
+        @Override
+        public Object parseLiteral(Object input) throws CoercingParseLiteralException {
+            logger.warn("parseLiteral called");
+            return null;
+        }
+    });
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GraphQLScalarType map() {
+        return MAP;
+    }
+
+    public static final GraphQLScalarType OBJECT_SCALAR = new GraphQLScalarType("Object", "A custom object scalar type", new Coercing() {
+        @Override
+        public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
+            return dataFetcherResult;
+        }
+
+        @Override
+        public Object parseValue(Object input) throws CoercingParseValueException {
+            logger.warn("parseValue called");
+            return null;
+        }
+
+        @Override
+        public Object parseLiteral(Object input) throws CoercingParseLiteralException {
+            logger.warn("parseLiteral called");
+            return null;
+        }
+    });
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GraphQLScalarType object() {
+        return OBJECT_SCALAR;
+    }
    /*public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 
         public Object serialize(Object dataFetcherResult) {

@@ -55,12 +55,11 @@ public class ChainResolver {
         return chainService.getNonce(address);
     }
 
-    public String storageAt(String address, int position) {
-        return chainService.getStorageAt(address, position);
-    }
-
-    public String storageAtByBlockNumber(String address, int position, long blockNumber) {
-        return chainService.getStorageAt(address, position, blockNumber);
+    public String storageAt(String address, int position, long blockNumber) {
+        if(blockNumber == 0)
+            return chainService.getStorageAt(address, position);
+        else
+            return chainService.getStorageAt(address, position, blockNumber);
     }
 
     public TxDetails transactionByBlockNumberAndIndex(long blockNumber, int index) {

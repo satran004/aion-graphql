@@ -32,6 +32,36 @@ type BlockQuery {
 type TxnQuery {
     transaction(txHash: String!): TxDetails
     transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
+
+    estimateNrg(code: String!): Long
+    estimateNrgByTxArgs(txArgs: TxArgsInput!): Long
+
+    code(address: String!, blockNumber: Long = -1): String
+
+    msgStatus(msgHash: String!): MsgResp
+    nrgPrice: Long
+    solcVersion: String
+    txReceipt(txnHash: String!): TxReceipt
+
+}
+
+scalar Map
+
+type TxnMutator {
+
+    call(args: TxArgsInput!): String
+    compile(code: String!): Map
+    contractDeploy(contractDeploy: ContractDeployInput!): [DeployResponse]
+
+    eventDeregister(evts: [String], address: String): Boolean
+    eventRegister(evts: [String]!, eventFilter: ContractEventFilterInput!, address: String!): Boolean
+
+    fastTxBuild(args: TxArgsInput!, call: Boolean!): Boolean
+
+    sendRawTransaction(encodedTx: String!): MsgResp
+    sendSignedTransaction(txArgs: TxArgsInput!, privateKey: String!): MsgResp
+    sendTransaction(txArgs: TxArgsInput!): MsgResp
+
 }
 
 type AccountQuery {
@@ -64,9 +94,8 @@ type ChainQuery {
     blockTransactionCountByNumber(number: Long!): Long
 
     nonce(address: String!): BigInteger
-    #storageAt(address: String!, postion: Int): String
-    #storageAtByBlockNumber(address: String!, blockNumber: Long!, postion: Int): String
-
+    storageAt(address: String!, postion: Int!, blockNumber: Long = 0): String
+    
     transactionByBlockNumberAndIndex(blockNumber: Long!, index: Long!): TxDetails
     transactionByHash(txHash: String!): TxDetails
     transactionCount(addres: String!, blockNumber: Long!): Long
@@ -100,85 +129,25 @@ type WalletMutator {
     unlockAccount(accountAddress: String!, passphrase: String!, duration: Int = 60): Boolean
 }
 
-type TxnMutator {
-    compile(code: String!): CompileResponse
-    sendTransaction(txArgs: TxArgsInput!): MsgResp
-}
-
-
-#scalar Hash256
-#scalar Address
-
-#type Block {
-#    number: Long
-#    nrgConsumed: Long
-#    nrgLimit: Long
-#    bloom: String # ByteArrayWrapper
-#    extraData: String #ByteArrayWrapper
-#    solution: String #ByteArrayWrapper
-#    hash: Hash256
-#    parentHash: Hash256
-#    nonce: BigInteger
-#    difficulty: BigInteger
-#    totalDifficulty: BigInteger
-#    minerAddress: Address
-#    stateRoot: Hash256
-#    txTrieRoot: Hash256
-#    size: Int
-#    txDetails: [TxDetails]
-#    blockTime: Long
-#}
-
 type Block {
     number: Long
     nrgConsumed: Long
     nrgLimit: Long
-    bloom: String # ByteArrayWrapper
-    extraData: String #ByteArrayWrapper
-    solution: String #ByteArrayWrapper
-    hash: String #Hash256
-    parentHash: String #Hash256
+    bloom: String
+    extraData: String
+    solution: String
+    hash: String
+    parentHash: String
     nonce: BigInteger
     difficulty: BigInteger
     totalDifficulty: BigInteger
-    minerAddress: String #Address
-    stateRoot: String #Hash256
-    txTrieRoot: String #Hash256
+    minerAddress: String
+    stateRoot: String
+    txTrieRoot: String
     size: Int
     txDetails: [TxDetails]
     blockTime: Long
 }
-
-
-#type Transaction {
-#    transactionIndex: Int
-#    blockNumber: Long
-#    timeStamp: Long
-#    nrgConsumed: Long
-#    nrgPrice: Long
-#    from: Address
-#    to: Address
-#    blockHash: Hash256
-#    txHash: Hash256
-#    nonce: BigInteger
-#    value: BigInteger
-#    data: String #ByteArrayWrapper
-#}
-
-#type TxDetails {
-#    from: Address
-#    to: Address
-#    txHash: Hash256
-#    value: BigInteger
-#    nonce: BigInteger
-#    nrgConsumed: Long
-#    nrgPrice: Long
-#    data: String
-#    txIndex: Int
-#    contract: Address
-#    timestamp: Long
-#    error: String
-#}
 
 type TxDetails {
     from: String
@@ -232,16 +201,29 @@ type Protocol {
 
 #contract
 type CompileResponse {
-   # abiDefinition: [ContractAbiEntry]
+    abiDefinition: [ContractAbiEntry]
     abiDefString: String
     code: String
     compilerOptions: String
     compilerVersion: String
-  #  developerDoc: String
+#    developerDoc: String
     language: String
     languageVersion: String
     source: String
    # userDoc: String
+}
+
+input CompileResponseInput {
+    abiDefinition: [ContractAbiEntryInput]
+    abiDefString: String
+    code: String
+    compilerOptions: String
+    compilerVersion: String
+    #  developerDoc: String
+    language: String
+    languageVersion: String
+    source: String
+    # userDoc: String
 }
 
 type ContractAbiEntry {
@@ -255,7 +237,26 @@ type ContractAbiEntry {
 
 }
 
+input ContractAbiEntryInput {
+    anonymous: Boolean
+    constant: Boolean
+    inputs: [ContractAbiIOParamInput]
+    name: String
+    outputs: [ContractAbiIOParamInput]
+    payable: Boolean
+    type: String
+
+}
+
 type ContractAbiIOParam {
+    name: String
+    paramLengths: [Int]
+    type: String
+    indexed: Boolean
+
+}
+
+input ContractAbiIOParamInput {
     name: String
     paramLengths: [Int]
     type: String
@@ -265,8 +266,8 @@ type ContractAbiIOParam {
 
 #Txn input
 input TxArgsInput {
-    from: String
-    to: String
+    from: String!
+    to: String!
     value: BigInteger
     data: String
     nonce: BigInteger
@@ -281,4 +282,40 @@ type MsgResp {
     txResult: String
     txDeploy: String
     error: String
+}
+
+input ContractDeployInput {
+   # compileResponse: CompileResponseInput
+    code: String
+    data: String
+    from: String
+    nrgLimit: Long
+    nrgPrice: Long
+    value: BigInteger
+    isConstructor: Boolean
+}
+
+input ContractEventFilterInput {
+    addresses: [String]
+    expireTime: Long
+    fromBlock: String
+    toBlock: String
+    topics: [String]
+}
+
+type DeployResponse {
+    address: String
+    txId: String
+}
+
+type TxReceipt {
+    blockHash: String
+    blockNumber: Long
+    contractAddress: String
+    cumulativeNrgUsed: Long
+    from: String
+    nrgConsumed: Long
+    to: String
+    txHash: String
+    txIndex: String
 }

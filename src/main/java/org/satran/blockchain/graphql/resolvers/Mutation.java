@@ -20,6 +20,9 @@ public class Mutation implements GraphQLMutationResolver {
     @Autowired
     private TxnMutator txnMutator;
 
+    @Autowired
+    private ContractMutator contractMutator;
+
     public AccountMutator accountApi() {
         return accountMutator;
     }
@@ -30,5 +33,9 @@ public class Mutation implements GraphQLMutationResolver {
 
     public TxnMutator txnApi() {
         return txnMutator;
+    }
+
+    public ContractMutator contractApi() {
+        return contractMutator;
     }
 }

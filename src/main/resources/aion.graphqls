@@ -1,3 +1,6 @@
+scalar Map
+scalar Any # String | Int | Float | Boolean
+
 type Query {
 
     blockApi: BlockQuery
@@ -13,6 +16,8 @@ type Query {
     netApi: NetQuery
 
     walletApi: WalletQuery
+
+    contractApi: ContractQuery
 }
 
 type Mutation {
@@ -22,6 +27,8 @@ type Mutation {
     walletApi: WalletMutator
 
     txnApi: TxnMutator
+
+    contractApi: ContractMutator
 }
 
 type BlockQuery {
@@ -44,8 +51,6 @@ type TxnQuery {
     txReceipt(txnHash: String!): TxReceipt
 
 }
-
-scalar Map
 
 type TxnMutator {
 
@@ -95,7 +100,7 @@ type ChainQuery {
 
     nonce(address: String!): BigInteger
     storageAt(address: String!, postion: Int!, blockNumber: Long = 0): String
-    
+
     transactionByBlockNumberAndIndex(blockNumber: Long!, index: Long!): TxDetails
     transactionByHash(txHash: String!): TxDetails
     transactionCount(addres: String!, blockNumber: Long!): Long
@@ -127,6 +132,15 @@ type AccountMutator {
 type WalletMutator {
     lockAccount(accountAddress: String!, passphrase: String!): Boolean
     unlockAccount(accountAddress: String!, passphrase: String!, duration: Int = 60): Boolean
+}
+
+type ContractQuery {
+    call(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!): ContractResponse
+}
+
+type ContractMutator {
+    createFromSource(source: String!, from: String!, nrgLimit: Long = 0, nrgPrice: Long = 0, value: BigInteger) : [Contract]!
+    execute(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!, nrgLimit: Long = 0, nrgPrice: Long = 0, txValue: Long = 0): ContractResponse
 }
 
 type Block {
@@ -200,6 +214,23 @@ type Protocol {
 }
 
 #contract
+type Contract {
+    contractName: String
+    contractAddress: String
+    from: String
+    deployTxId: String
+    encodedData: String
+    abiDefinition: [ContractAbiEntry]
+    abiDefToString: String
+    source: String
+    code: String
+    compilerOptions: String
+    compilerVersion: String
+    developerDoc: String
+    languageVersion: String
+    userDoc: String
+}
+
 type CompileResponse {
     abiDefinition: [ContractAbiEntry]
     abiDefString: String
@@ -235,6 +266,10 @@ type ContractAbiEntry {
     payable: Boolean
     type: String
 
+    event: Boolean
+    constructor: Boolean
+    hashed: String
+    fallback: Boolean
 }
 
 input ContractAbiEntryInput {
@@ -319,3 +354,40 @@ type TxReceipt {
     txHash: String
     txIndex: String
 }
+
+enum SolidityType {
+    _address,
+    _bool,
+    _int,
+    _uint,
+    _bytes,
+    _dbytes,
+    _string
+}
+
+input ContractFunction {
+    name: String!,
+    params: [Param]
+    outputs: [Output]
+}
+
+input Output {
+    type: SolidityType
+   # array: Boolean = false
+}
+
+input Param {
+    type: SolidityType
+    value: Any
+    values: [Any]
+}
+
+type ContractResponse {
+    constant: Boolean
+    data: [String]
+    txHash: String
+    status: String
+    msgHash: String
+    error: String
+}
+

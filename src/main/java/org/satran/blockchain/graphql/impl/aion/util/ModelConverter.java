@@ -1,6 +1,7 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
 import com.google.gson.Gson;
+import org.aion.api.IContract;
 import org.aion.api.type.*;
 import org.aion.base.type.Address;
 import org.aion.base.util.ByteArrayWrapper;
@@ -206,6 +207,120 @@ public class ModelConverter {
                     })
                     .collect(Collectors.toList()));
         }
+
+        return bean;
+    }
+
+    public static ContractBean convert(IContract contract) {
+
+        ContractBean bean = new ContractBean();
+
+        bean.setContractName(contract.getContractName());
+
+        if(contract.getContractAddress() != null)
+            bean.setContractAddress(contract.getContractAddress().toString());
+
+        if(contract.getFrom() != null)
+            bean.setFrom(contract.getFrom().toString());
+
+        if(contract.getDeployTxId() != null)
+            bean.setDeployTxId(contract.getDeployTxId().toString());
+
+       //if(contract.getEncodedData() != null)
+       //     bean.setEncodedData(contract.getEncodedData().toString()); //TODO
+
+        bean.setAbiDefToString(contract.getAbiDefToString());
+        bean.setSource(contract.getSource());
+        bean.setCode(contract.getCode());
+        bean.setCompilerOptions(contract.getCompilerOptions());
+        bean.setCompilerVersion(contract.getCompilerVersion());
+
+        if(contract.getDeveloperDoc() != null)
+            bean.setDeveloperDoc(contract.getDeveloperDoc().toString());
+
+        bean.setLanguageVersion(contract.getLanguageVersion());
+
+        if(contract.getUserDoc() != null)
+            bean.setUserDoc(contract.getUserDoc().toString());
+
+        //set Abi info
+        bean.setAbiDefinition(
+                contract.getAbiDefinition()
+                .stream()
+                .map(cabi -> {
+                    ContractAbiEntryBean abiEntryBean = new ContractAbiEntryBean();
+                    abiEntryBean.setAnonymous(cabi.anonymous);
+                    abiEntryBean.setConstant(cabi.constant);
+                    abiEntryBean.setName(cabi.name);
+                    abiEntryBean.setPayable(cabi.payable);
+                    abiEntryBean.setType(cabi.type);
+
+                    if(cabi.inputs != null) {
+                        abiEntryBean.setInputs(
+                            cabi.inputs
+                                    .stream()
+                                    .map(in -> {
+                                        ContractAbiIOParamBean ioBean = new ContractAbiIOParamBean(
+                                                in.getName(),
+                                                in.getParamLengths(),
+                                                in.getType(),
+                                                in.isIndexed()
+                                        );
+
+                                        return ioBean;
+                                    }).collect(Collectors.toList())
+                        );
+                    }
+
+                    if(cabi.outputs != null) {
+                        abiEntryBean.setOutputs(
+                                cabi.outputs
+                                        .stream()
+                                        .map(out -> {
+                                            ContractAbiIOParamBean ioBean = new ContractAbiIOParamBean(
+                                                    out.getName(),
+                                                    out.getParamLengths(),
+                                                    out.getType(),
+                                                    out.isIndexed()
+                                            );
+
+                                            return ioBean;
+                                        }).collect(Collectors.toList())
+                        );
+                    }
+
+                    abiEntryBean.setEvent(cabi.isEvent());
+                    abiEntryBean.setConstructor(cabi.isConstructor());
+                    abiEntryBean.setHashed(cabi.getHashed());
+                    abiEntryBean.setFallback(cabi.isFallback());
+
+                    return abiEntryBean;
+                }).collect(Collectors.toList())
+        );
+
+        return bean;
+    }
+
+    public static ContractResponseBean convert(ContractResponse res) {
+        ContractResponseBean bean = new ContractResponseBean();
+
+        bean.setConstant(res.isConstant());
+
+//        if(res.getData() != null)
+//            bean.setData(res.getData()
+//                            .stream()
+//                            .map(o -> String.valueOf(o))
+//                            .collect(Collectors.toList()));
+
+        bean.setError(res.getError());
+
+        if(res.getMsgHash() != null)
+            bean.setMsgHash(res.getMsgHash().toString());
+
+        if(res.getTxHash() != null)
+            bean.setTxHash(res.getTxHash().toString());
+
+        bean.setStatus(res.getStatus());
 
         return bean;
     }

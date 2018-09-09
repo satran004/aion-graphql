@@ -1,13 +1,12 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
-import com.google.common.collect.Lists;
 import org.aion.api.type.*;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
-import org.satran.blockchain.graphql.impl.aion.util.StringByteUtil;
+import org.satran.blockchain.graphql.impl.aion.util.TypeUtil;
 import org.satran.blockchain.graphql.model.*;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.model.TxDetails;
@@ -18,9 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class TxnServiceImpl implements TxnService {
@@ -338,7 +335,7 @@ public class TxnServiceImpl implements TxnService {
 
             byte[] bytes = apiMsg.getObject();
 
-            return StringByteUtil.toString(bytes);
+            return TypeUtil.toString(bytes);
         }));
     }
 
@@ -357,7 +354,7 @@ public class TxnServiceImpl implements TxnService {
 
             byte[] bytes = apiMsg.getObject();
 
-            return StringByteUtil.toString(bytes);
+            return TypeUtil.toString(bytes);
         }));
     }
 
@@ -367,7 +364,7 @@ public class TxnServiceImpl implements TxnService {
             logger.debug("Getting message status {} ", msgHash);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getTx().getMsgStatus(StringByteUtil.toByteArrayWrapper(msgHash)));
+            apiMsg.set(api.getTx().getMsgStatus(TypeUtil.toByteArrayWrapper(msgHash)));
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get Msg status : {} ", apiMsg.getErrString());
@@ -439,7 +436,7 @@ public class TxnServiceImpl implements TxnService {
             logger.debug("Sending raw transaction {} ", encodedTx);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getTx().sendRawTransaction(StringByteUtil.toByteArrayWrapper(encodedTx)));
+            apiMsg.set(api.getTx().sendRawTransaction(TypeUtil.toByteArrayWrapper(encodedTx)));
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send raw transaction : {} ", apiMsg.getErrString());
@@ -460,7 +457,7 @@ public class TxnServiceImpl implements TxnService {
         TxArgs txArgs = ModelConverter.convert(txArgsInput);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getTx().sendSignedTransaction(txArgs, StringByteUtil.toByteArrayWrapper(privateKey)));
+            apiMsg.set(api.getTx().sendSignedTransaction(txArgs, TypeUtil.toByteArrayWrapper(privateKey)));
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send signed transaction request : {} ", apiMsg.getErrString());

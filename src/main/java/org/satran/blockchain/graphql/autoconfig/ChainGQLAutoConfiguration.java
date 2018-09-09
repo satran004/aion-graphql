@@ -2,7 +2,7 @@ package org.satran.blockchain.graphql.autoconfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oembedler.moon.graphql.boot.GraphQLJavaToolsAutoConfiguration;
-import graphql.language.StringValue;
+import graphql.language.*;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 @Configuration
@@ -22,8 +24,6 @@ import java.util.Map;
 public class ChainGQLAutoConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ChainGQLAutoConfiguration.class);
-
-
 
     public static final GraphQLScalarType MAP = new GraphQLScalarType("Map", "A custom map scalar type", new Coercing() {
         @Override
@@ -51,12 +51,12 @@ public class ChainGQLAutoConfiguration {
     });
 
     @Bean
-    @ConditionalOnMissingBean
+//    @ConditionalOnMissingBean
     public GraphQLScalarType map() {
         return MAP;
     }
 
-    public static final GraphQLScalarType OBJECT_SCALAR = new GraphQLScalarType("Object", "A custom object scalar type", new Coercing() {
+    public static final GraphQLScalarType ANY_SCALAR = new GraphQLScalarType("Any", "A custom object scalar type for String, Int, Float, Boolean value", new Coercing() {
         @Override
         public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
             return dataFetcherResult;
@@ -65,20 +65,36 @@ public class ChainGQLAutoConfiguration {
         @Override
         public Object parseValue(Object input) throws CoercingParseValueException {
             logger.warn("parseValue called");
-            return null;
+            return input;
         }
 
         @Override
         public Object parseLiteral(Object input) throws CoercingParseLiteralException {
-            logger.warn("parseLiteral called");
-            return null;
+            if (input instanceof StringValue) {
+                String stringVal = ((StringValue) input).getValue();
+                return stringVal;
+            } else if (input instanceof IntValue) {
+                BigInteger intValue = ((IntValue) input).getValue();
+                return intValue;
+            } else if (input instanceof FloatValue) {
+                BigDecimal floatValue = ((FloatValue) input).getValue();
+                return floatValue;
+            } else if (input instanceof BooleanValue) {
+                Boolean booleanValue = ((BooleanValue)input).isValue();
+                return booleanValue;
+            }
+
+            logger.error("Not able to create Object value for " + input);
+            throw new CoercingParseLiteralException(
+                    "Value is not a Object value : '" + String.valueOf(input) + "'"
+            );
         }
     });
 
     @Bean
-    @ConditionalOnMissingBean
+//    @ConditionalOnMissingBean
     public GraphQLScalarType object() {
-        return OBJECT_SCALAR;
+        return ANY_SCALAR;
     }
    /*public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 

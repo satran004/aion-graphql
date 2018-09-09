@@ -1,0 +1,204 @@
+query accounts {
+  walletApi {
+    accounts
+  }
+}
+
+query listtxn {
+  txnApi {
+    transactions(limit: 5) {
+      from
+      to
+      value
+      txHash
+      blockNumber
+    }
+  }
+}
+
+query transaction {
+  txnApi{
+  transaction(txHash:"35c72fcfcc2c1b73e5124c577c74e5ea6073805156331ab6f9b970006c5d2200") {
+    to
+    from
+    value
+    data
+    contract
+
+  }
+}}
+
+mutation unlock {
+  walletApi {
+    unlockAccount(accountAddress: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9", passphrase: "", duration: 360)
+  }
+}
+
+mutation lock {
+  walletApi {
+    unlockAccount(accountAddress: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9", passphrase: "", duration: 360)
+  }
+}
+
+mutation compile {
+  txnApi {
+    compile(code: "contract Mortal { /* Define variable owner of the type address */ address owner; /* This function is executed at initialization and sets the owner of the contract */ function Mortal() { owner = msg.sender; } /* Function to recover the funds on the contract */ function kill() { if (msg.sender == owner) selfdestruct(owner); } } contract Greeter is Mortal { /* Define variable greeting of the type string */ string greeting; /* This runs when the contract is executed */ function Greeter(string _greeting) public { greeting = _greeting; } /* Main function */ function greet() constant returns (string) { return greeting; } }")
+  }
+}
+
+mutation compilePersonnel {
+  txnApi {
+    compile(code: "contract Personnel { address public owner; modifier onlyOwner() { require(msg.sender == owner); _;} mapping(bytes32 => address) private userList; /** 3 LSB bits for each privilege type */ mapping(address => bytes1) private userPrivilege; function Personnel(){ owner = msg.sender; } event UserAdded(string _stamp); event AddressAdded(address indexed _addr); function getUserAddress(string _stamp) constant returns (address){ return userList[sha3(_stamp)]; } function addUser(string _stamp, address _addr, bytes1 _userPrivilege) onlyOwner{ userList[sha3(_stamp)] = _addr; userPrivilege[_addr] = _userPrivilege; UserAdded(_stamp); } function addAddress(string _stamp, address _addr) onlyOwner{ userList[sha3(_stamp)] = _addr; AddressAdded(_addr); } }")
+
+    }
+}
+
+mutation contractDeploy {
+  txnApi {
+    contractDeploy(contractDeploy: {code: "contract Mortal { /* Define variable owner of the type address */ address owner; /* This function is executed at initialization and sets the owner of the contract */ function Mortal() { owner = msg.sender; } /* Function to recover the funds on the contract */ function kill() { if (msg.sender == owner) selfdestruct(owner); } } contract Greeter is Mortal { /* Define variable greeting of the type string */ string greeting; /* This runs when the contract is executed */ function Greeter(string _greeting) public { greeting = _greeting; } /* Main function */ function greet() constant returns (string) { return greeting; } }", data: "", from: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9", nrgLimit: 1000000, nrgPrice: 10000000000, value: 0}) {
+      address
+      txId
+    }
+  }
+}
+
+query estimateNrg {
+  txnApi {
+    estimateNrgByTxArgs(txArgs: {data: "0x605060405234156100105760006000fd5b5b3360006000508282909180600101839055555050505b61002c565b60998061003a6000396000f30060506040526000356c01000000000000000000000000900463ffffffff16806341c0e1b514603157602b565b60006000fd5b3415603c5760006000fd5b60426044565b005b600060005080600101549054339091149190141615606a57600060005080600101549054ff5b5b5600a165627a7a723058202d8ae54df479ab4cc3936d3e0ff769eca1c5ca09bc2e9c313c6204f4547fb61c0029", from: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9", to: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9"})
+  }
+}
+
+mutation eventDeregister {
+  txnApi {
+    eventDeregister(evts: ["testddtt", "test1tt"], address: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9")
+  }
+}
+
+mutation eventRegister {
+  txnApi {
+    eventRegister(evts: ["testdd", "test1"], eventFilter: {addresses: ["a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9"], fromBlock: "960999", toBlock: "1000000", topics: ["test", "tt"]}, address: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9")
+  }
+}
+
+query code {
+  txnApi {
+    code(blockNumber: 400, address: "a02b815c7a8c442f9a47955da408da0bf8fb4b8f7240b2b4f126ce289cd24db9")
+  }
+}
+
+mutation sendTransaction {
+  txnApi {
+    sendTransaction(txArgs: {
+      from: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9",
+      to: "a09194126e06f41d86d0cf1e2b6c9f9713d30e0c9ad16908003fc17ab115ed0f",
+      value: 40000}) {
+      status
+      msgHash
+      txHash
+      txResult
+      txDeploy
+      error
+    }
+  }
+}
+
+query txReceipt {
+  txnApi {
+    txReceipt(txnHash: "35c72fcfcc2c1b73e5124c577c74e5ea6073805156331ab6f9b970006c5d2200") {
+      blockNumber
+      blockHash
+      from
+      to
+      nrgConsumed
+      contractAddress
+
+    }
+  }
+}
+
+mutation createContractFromSource {
+  contractApi {
+    createFromSource(
+      source:"contract Mortal { /* Define variable owner of the type address */ address owner; /* This function is executed at initialization and sets the owner of the contract */ function Mortal() { owner = msg.sender; } /* Function to recover the funds on the contract */ function kill() { if (msg.sender == owner) selfdestruct(owner); } } contract Greeter is Mortal { /* Define variable greeting of the type string */ string greeting; /* This runs when the contract is executed */ function Greeter(string _greeting) public { greeting = _greeting; } /* Main function */ function greet() constant returns (string) { return greeting; } }"
+      from: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9"
+      value: 20000
+    ) {
+      contractName
+      contractAddress
+      from
+      deployTxId
+      encodedData
+      abiDefToString
+      abiDefinition {
+        anonymous
+        constant
+        name
+        payable
+        type
+        inputs {
+          name
+          paramLengths
+          type
+          indexed
+        }
+        outputs {
+          name
+          paramLengths
+          type
+          indexed
+        }
+      }
+      source
+      code
+      compilerOptions
+      compilerVersion
+      developerDoc
+      languageVersion
+      userDoc
+    }
+  }
+}
+
+mutation createContractFromSourcePersonnel {
+  contractApi {
+    createFromSource(
+      source: "contract Personnel { address public owner; modifier onlyOwner() { require(msg.sender == owner); _;} mapping(bytes32 => address) private userList; /** 3 LSB bits for each privilege type */ mapping(address => bytes1) private userPrivilege; function Personnel(){ owner = msg.sender; } event UserAdded(string _stamp); event AddressAdded(address indexed _addr); function getUserAddress(string _stamp) constant returns (address){ return userList[sha3(_stamp)]; } function addUser(string _stamp, address _addr, bytes1 _userPrivilege) onlyOwner{ userList[sha3(_stamp)] = _addr; userPrivilege[_addr] = _userPrivilege; UserAdded(_stamp); } function addAddress(string _stamp, address _addr) onlyOwner{ userList[sha3(_stamp)] = _addr; AddressAdded(_addr); } }"
+      from: "a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9"
+      value: 20000
+    ) {
+      contractName
+      contractAddress
+      from
+      deployTxId
+      encodedData
+      abiDefToString
+      abiDefinition {
+        anonymous
+        constant
+        name
+        payable
+        type
+        inputs {
+          name
+          paramLengths
+          type
+          indexed
+        }
+        outputs {
+          name
+          paramLengths
+          type
+          indexed
+        }
+      }
+      source
+      code
+      compilerOptions
+      compilerVersion
+      developerDoc
+      languageVersion
+      userDoc
+    }
+  }
+}
+

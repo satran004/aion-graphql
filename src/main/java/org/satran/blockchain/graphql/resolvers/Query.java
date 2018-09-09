@@ -32,6 +32,9 @@ public class Query implements GraphQLQueryResolver {
     @Autowired
     private WalletResolver walletResolver;
 
+    @Autowired
+    private ContractQuery contractQuery;
+
 
     public BlockResolver blockApi() {
         return blockResolver;
@@ -59,6 +62,10 @@ public class Query implements GraphQLQueryResolver {
 
     public WalletResolver walletApi() {
         return walletResolver;
+    }
+
+    public ContractQuery contractApi() {
+        return contractQuery;
     }
 
 }

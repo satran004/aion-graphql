@@ -373,6 +373,7 @@ input ContractFunction {
 
 input Output {
     type: SolidityType
+    encoding: String
    # array: Boolean = false
 }
 
@@ -384,7 +385,7 @@ input Param {
 
 type ContractResponse {
     constant: Boolean
-    data: [String]
+    data: [Any]
     txHash: String
     status: String
     msgHash: String

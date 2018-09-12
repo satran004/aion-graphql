@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ContractResponseBean {
     private boolean constant;
-    private List<String> data;
+    private List<Object> data;
     private String txHash;
     private byte status;
     private String msgHash;
@@ -18,11 +18,11 @@ public class ContractResponseBean {
         this.constant = constant;
     }
 
-    public List<String> getData() {
+    public List<Object> getData() {
         return data;
     }
 
-    public void setData(List<String> data) {
+    public void setData(List<Object> data) {
         this.data = data;
     }
 

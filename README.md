@@ -1,7 +1,7 @@
 <H1>GraphQL interface for Aion Blockchain</H1> 
 <a href="https://travis-ci.org/satran004/aion-graphql"><img src="https://travis-ci.org/satran004/aion-graphql.svg?branch=master"/></a>
 
-Demo: http://graphql.aion-tools.info/graphiql
+Demo: http://graphql.aion-tools.info/playground.html
 
 API Doc: <a href="https://satran004.github.io/aion-graphql-docs/www/"> Aion GraphQL API </a>
 
@@ -24,6 +24,7 @@ The following apis are currently supported :
 - chainApi
 - netApi
 - walletApi
+- contractApi
 
 For detail information, please visit this <a href="https://satran004.github.io/aion-graphql-docs/www/"> API page </a>
 

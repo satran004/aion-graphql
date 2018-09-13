@@ -2,10 +2,7 @@ package org.satran.blockchain.graphql.impl.aion.util;
 
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
-import org.aion.api.sol.IAddress;
-import org.aion.api.sol.IBool;
-import org.aion.api.sol.IBytes;
-import org.aion.api.sol.ISString;
+import org.aion.api.sol.*;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.apache.commons.lang3.StringUtils;
@@ -29,62 +26,81 @@ public class ContractTypeConverter {
 
     private static Logger logger = LoggerFactory.getLogger(ContractTypeConverter.class);
 
-    public static void populateParams(ContractFunction contractFunction, IContract contract) {
+    public static void populateInputParams(ContractFunction contractFunction, IContract contract) {
 
         if(contractFunction.getParams() == null)
             return;
 
         //set params
         for(Param param: contractFunction.getParams()) {
-
-            boolean isArray = false;
-            if(param.getValues() != null && param.getValues().size() > 0)
-                isArray = true;
-
-            if(param.getType() == SolidityType._address) {
-
-                if(isArray)
-                    contract.setParam(IAddress.copyFrom(toStringList(param.getValues())));
-                else
-                    contract.setParam(IAddress.copyFrom(String.valueOf(param.getValue())));
-
-            } else if(param.getType() == SolidityType._bool) {
-
-                if(isArray)
-                    contract.setParam(IBool.copyFrom(toBooleanList(param.getValues())));
-                else
-                    contract.setParam(IBool.copyFrom(toBoolean(param.getValue())));
-
-            } else if(param.getType() == SolidityType._bytes) {
-
-                if(isArray)
-                    contract.setParam(IBytes.copyFrom(toBytesList(param.getValues())));
-                else
-                    contract.setParam(IBytes.copyFrom(toBytes(String.valueOf(param.getValue()))));
-
-            } else if(param.getType() == SolidityType._dbytes) {
-
-                contract.setParam(IBytes.copyFrom(toBytes(String.valueOf(param.getValue()))));
-
-            } else if(param.getType() == SolidityType._int) {
-
-                if(isArray)
-                    contract.setParam(toIInt(param.getValues()));
-                else
-                    contract.setParam(toIInt(param.getValue()));
-
-            } else if(param.getType() == SolidityType._uint) {
-
-                if(isArray)
-                    contract.setParam(toIInt(param.getValues()));
-                else
-                    contract.setParam(toIInt(param.getValue()));
-
-            } else if(param.getType() == SolidityType._string) {
-                contract.setParam(ISString.copyFrom(String.valueOf(param.getValue())));
-            } else
-                throw new DataConversionException("Unable to convert input parameters : " + param);
+            ISolidityArg solValue = convertParamToSolidityType(param);
+            contract.setParam(solValue);
         }
+    }
+
+    public static List<ISolidityArg> convertParamsToSolValues(List<Param> params) {
+
+        if(params == null || params.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        return params.stream()
+                .map(param -> convertParamToSolidityType(param))
+                .collect(Collectors.toList());
+    }
+
+    public static ISolidityArg convertParamToSolidityType(Param param) {
+        boolean isArray = false;
+
+        if(param.getValues() != null && param.getValues().size() > 0)
+            isArray = true;
+
+        ISolidityArg solValue = null;
+
+        if(param.getType() == SolidityType._address) {
+
+            if(isArray)
+                solValue = IAddress.copyFrom(toStringList(param.getValues()));
+            else
+                solValue = IAddress.copyFrom(String.valueOf(param.getValue()));
+
+        } else if(param.getType() == SolidityType._bool) {
+
+            if(isArray)
+                solValue = IBool.copyFrom(toBooleanList(param.getValues()));
+            else
+                solValue = IBool.copyFrom(toBoolean(param.getValue()));
+
+        } else if(param.getType() == SolidityType._bytes) {
+
+            if(isArray)
+                solValue = IBytes.copyFrom(toBytesList(param.getValues()));
+            else
+                solValue = IBytes.copyFrom(toBytes(String.valueOf(param.getValue())));
+
+        } else if(param.getType() == SolidityType._dbytes) {
+
+            solValue = IBytes.copyFrom(toBytes(String.valueOf(param.getValue())));
+
+        } else if(param.getType() == SolidityType._int) {
+
+            if(isArray)
+                solValue = toIInt(param.getValues());
+            else
+                solValue = toIInt(param.getValue());
+
+        } else if(param.getType() == SolidityType._uint) {
+
+            if(isArray)
+                solValue = toIInt(param.getValues());
+            else
+                solValue = toIInt(param.getValue());
+
+        } else if(param.getType() == SolidityType._string) {
+            solValue = ISString.copyFrom(String.valueOf(param.getValue()));
+        } else
+            throw new DataConversionException("Unable to convert input parameters : " + param);
+
+        return solValue;
     }
 
     public static void populateOutputs(ContractFunction contractFunction,

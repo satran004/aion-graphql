@@ -30,14 +30,16 @@ public class ModelConverter {
         b.setTxTrieRoot(String.valueOf(blockDetails.getTxTrieRoot()));
         b.setSize(blockDetails.getSize());
 
-        b.setTxDetails(blockDetails.getTxDetails().stream()
-                .map(txDetails -> {
-                   TxDetails txD =  ModelConverter.convert(txDetails);
-                   txD.setBlockHash(b.getHash());
-                   txD.setBlockNumber(b.getNumber());
+        if(blockDetails.getTxDetails() != null) {
+            b.setTxDetails(blockDetails.getTxDetails().stream()
+                    .map(txDetails -> {
+                        TxDetails txD = ModelConverter.convert(txDetails);
+                        txD.setBlockHash(b.getHash());
+                        txD.setBlockNumber(b.getNumber());
 
-                   return txD;
-                }).collect(Collectors.toList()));
+                        return txD;
+                    }).collect(Collectors.toList()));
+        }
 
         return b;
     }

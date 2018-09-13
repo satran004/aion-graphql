@@ -361,7 +361,6 @@ enum SolidityType {
     _int,
     _uint,
     _bytes,
-    _dbytes,
     _string
 }
 
@@ -374,7 +373,6 @@ input ContractFunction {
 input Output {
     type: SolidityType
     encoding: String
-   # array: Boolean = false
 }
 
 input Param {

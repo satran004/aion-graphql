@@ -18,7 +18,7 @@ public interface TxnService {
 
     public long estimateNrg(TxArgsInput argsInput);
 
-//    public long estimateNrgFromSource(String source);
+    public long estimateNrgFromSource(String source);
 
     public boolean eventDeregister(List<String> evts, String address);
 

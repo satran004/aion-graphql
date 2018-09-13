@@ -1,13 +1,16 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.api.IContract;
+import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.ContractBean;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
+import org.satran.blockchain.graphql.model.Param;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
 import org.satran.blockchain.graphql.service.ContractService;
 import org.slf4j.Logger;
@@ -22,7 +25,7 @@ import java.util.Map;
 import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
 import static org.aion.api.ITx.NRG_PRICE_MIN;
 import static org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter.populateOutputs;
-import static org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter.populateParams;
+import static org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter.populateInputParams;
 
 @Repository
 public class ContractServiceImpl implements ContractService{
@@ -37,49 +40,36 @@ public class ContractServiceImpl implements ContractService{
 
     @Override
     public List<ContractBean> createFromSource​(String source, String from, long nrgLimit, long nrgPrice) {
-        if(logger.isDebugEnabled())
-            logger.debug("Trying to create contract from source");
 
-        return accessor.call(((apiMsg, api) -> {
-
-            try {
-                apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice));
-
-                if (apiMsg.isError()) {
-                    logger.error("Error creating contract from source code : {} ", apiMsg.getErrString());
-                    throw new RuntimeException(apiMsg.getErrString());
-                }
-
-                Object result = apiMsg.getObject();
-
-                Map<Address, String> contractAddresses = api.getContractController().getContractMap();
-
-                List<ContractBean> contracts = new ArrayList<>();
-
-                for (Address contractAdd: contractAddresses.keySet()) {
-                    IContract contract = api.getContractController().getContract(contractAdd);
-
-                    contracts.add(ModelConverter.convert(contract));
-                }
-
-                return contracts;
-
-            } finally {
-                api.getContractController().clear();
-            }
-
-        }));
+        return createFromSource​(source, from, nrgLimit, nrgPrice, null, null);
     }
 
     @Override
     public List<ContractBean> createFromSource​(String source, String from, long nrgLimit, long nrgPrice, BigInteger value) {
+        return createFromSource​(source, from, nrgLimit, nrgPrice, value, null);
+    }
+
+    @Override
+    public List<ContractBean> createFromSource​(String source, String from, long nrgLimit, long nrgPrice, BigInteger value, List<Param> params) {
+
         if(logger.isDebugEnabled())
             logger.debug("Trying to create contract from source");
 
         return accessor.call(((apiMsg, api) -> {
 
             try {
-                apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice, value));
+
+                if(params == null || params.size() == 0) {
+                    if(value != null)
+                        apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice, value));
+                    else
+                        apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice));
+
+                } else {
+
+                    List<ISolidityArg> solParams = ContractTypeConverter.convertParamsToSolValues(params);
+                    apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice, value, solParams));
+                }
 
                 if (apiMsg.isError()) {
                     logger.error("Error creating contract from source code : {} ", apiMsg.getErrString());
@@ -127,7 +117,7 @@ public class ContractServiceImpl implements ContractService{
                 }
 
                 contract.newFunction(contractFunction.name());
-                populateParams(contractFunction, contract);
+                populateInputParams(contractFunction, contract);
 
                 if(nrgLimit == 0)
                     contract.setTxNrgLimit(NRG_LIMIT_TX_MAX);
@@ -183,7 +173,7 @@ public class ContractServiceImpl implements ContractService{
                 }
 
                 contract.newFunction(contractFunction.name());
-                populateParams(contractFunction, contract);
+                populateInputParams(contractFunction, contract);
 
                 ApiMsg apiMsg1 = contract.build().call();
 

@@ -256,6 +256,24 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
+    public long estimateNrgFromSource(String source) {
+        if (logger.isDebugEnabled())
+            logger.debug("Estimate Nrg from source {} ", source);
+
+        return accessor.call(((apiMsg, api) -> {
+            apiMsg.set(api.getTx().estimateNrg(source));
+
+            if(apiMsg.isError()) {
+                logger.error("Error estimating Nrg : {} ", apiMsg.getErrString());
+                throw new RuntimeException(apiMsg.getErrString());
+            }
+
+            return apiMsg.getObject();
+
+        }));
+    }
+
+    @Override
     public boolean eventDeregister(List<String> evts, String address) {
 
         if (logger.isDebugEnabled())

@@ -34,12 +34,10 @@ The project will be enhanced to support other read and write operations.
 
 <b>Compile:</b>
 
-$> mvn clean build
+$> ./gradlew clean build
 
 <b>Run:</b>
 
-$> mvn spring-boot:run -Dspring-boot.run.arguments=--rpc.endpoint=tcp://[kernel-host]:8547
-
-
+$> rpc_endpoint=tcp://[kernel-host]:8547 ./gradlew bootRun
 
 

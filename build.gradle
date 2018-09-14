@@ -1,0 +1,64 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.5.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'org.satran.aion'
+version = '0.0.1-SNAPSHOT'
+
+description = "aion-graphql"
+
+sourceCompatibility = 10
+targetCompatibility = 10
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+
+    mavenCentral()
+}
+
+dependencies {
+//    compile('org.springframework.boot:spring-boot-starter-aop')
+//    compile('org.springframework.boot:spring-boot-starter-web')
+//    compile('org.springframework.boot:spring-boot-devtools')
+//
+//    compile('com.graphql-java:graphql-java-tools:4.3.0')
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
+
+    compile group: 'com.graphql-java', name: 'graphql-java-tools', version:'4.3.0'
+    compile group: 'com.graphql-java', name: 'graphql-spring-boot-starter', version:'4.0.0'
+    compile group: 'com.graphql-java', name: 'graphiql-spring-boot-starter', version:'4.0.0'
+
+    compile group: 'org.apache.commons', name: 'commons-pool2', version:'2.2'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version:'1.9.3'
+
+    compile fileTree(include: ['*.jar'], dir: 'lib')
+    compile fileTree(include: ['*.jar'], dir: 'lib/lib')
+
+//    system group: 'org.aion', name: 'libAion', version:'0.11'
+//    system group: 'commons-collections', name: 'common-collections', version:'1.0'
+//    system group: 'gson', name: 'gson', version:'1.0'
+//    system group: 'libnsc', name: 'libnsc', version:'1.0'
+//    system group: 'libnzmq', name: 'libnzmq', version:'1.0'
+//    system group: 'ch.qos.logback', name: 'logback-classic1', version:'1.0'
+//    system group: 'ch.qos.logback', name: 'logback-core', version:'1.0'
+//    system group: 'protobuf', name: 'protobuf', version:'1.0'
+}

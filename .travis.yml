@@ -1,7 +1,7 @@
 language: java
 jdk: oraclejdk10
 install: true
-script: ./mvnw clean install
+script: ./gradlew clean build
 cache:
   directories:
   - $HOME/.m2

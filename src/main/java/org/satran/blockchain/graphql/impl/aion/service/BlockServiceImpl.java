@@ -1,5 +1,6 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.service.AdminService;
 import org.satran.blockchain.graphql.service.BlockService;
@@ -36,7 +37,7 @@ public class BlockServiceImpl implements BlockService {
         if(blocks != null && blocks.size() > 0)
             return blocks.get(0);
         else
-            throw new RuntimeException("Latet block not found");
+            throw new BlockChainAcessException("Latet block not found");
     }
 
 }

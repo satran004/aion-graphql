@@ -2,7 +2,6 @@ package org.satran.blockchain.graphql.model.input;
 
 import org.satran.blockchain.graphql.model.Output;
 import org.satran.blockchain.graphql.model.SolidityType;
-import org.satran.blockchain.graphql.model.Param;
 
 import java.util.List;
 

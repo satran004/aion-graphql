@@ -2,6 +2,8 @@ package org.satran.blockchain.graphql.resolvers;
 
 import org.satran.blockchain.graphql.model.ContractBean;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
+import org.satran.blockchain.graphql.model.input.ConstructorArgs;
+import org.satran.blockchain.graphql.model.input.Param;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
 import org.satran.blockchain.graphql.service.ContractService;
 import org.slf4j.Logger;
@@ -22,12 +24,17 @@ public class ContractMutator {
         this.contractService = contractService;
     }
 
-    public List<ContractBean> createFromSource(String source, String from, long nrgLimit, long nrgPrice, BigInteger value) {
+    public List<ContractBean> createFromSource(String source, String from, long nrgLimit, long nrgPrice, BigInteger value, List<Param> constructorArgs) {
 
-        if(value == null)
-            return contractService.createFromSource​(source, from, nrgLimit, nrgPrice);
-        else
-            return contractService.createFromSource​(source, from, nrgLimit, nrgPrice, value);
+        return contractService.createFromSource​(source, from, nrgLimit, nrgPrice, value, constructorArgs);
+
+    }
+
+    public List<ContractBean> createMultiContractsFromSource​(String source, String from, long nrgLimit, long nrgPrice, BigInteger value,
+                                                                List<ConstructorArgs> constructorArgsList) {
+
+        return contractService.createMultiContractsFromSource​(source, from, nrgLimit, nrgPrice, value, constructorArgsList);
+
     }
 
     public ContractResponseBean execute(String fromAddress, String contractAddress, String abiDefinition,

@@ -4,6 +4,7 @@ import org.aion.api.type.Key;
 import org.aion.api.type.KeyExport;
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.model.AccountKey;
 import org.satran.blockchain.graphql.model.AccountKeyExport;
@@ -47,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
             apiMsg.set(api.getAccount().accountCreate(passphrase, privateKey));
             if (apiMsg.isError()) {
                 logger.error("Unable to create account" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -56,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
             List<Key> keys = apiMsg.getObject();
 
             if (keys == null || keys.size() == 0)
-                throw new RuntimeException("Account cannot be created");
+                throw new BlockChainAcessException("Account cannot be created");
 
             return keys.stream()
                     .map(k -> new AccountKey(k.getPassPhrase(), k.getPubKey().toString(), k.getPriKey().toString()))
@@ -84,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
             apiMsg.set(api.getAccount().accountExport(aionKeys));
             if (apiMsg.isError()) {
                 logger.error("Unable to export accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -93,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
             KeyExport exportKey = apiMsg.getObject();
 
             if (exportKey == null)
-                throw new RuntimeException("Accounts cannot be exported");
+                throw new BlockChainAcessException("Accounts cannot be exported");
 
             List<String> keyfiles = exportKey.getKeyFiles().stream()
                     .map(k -> k.toString())
@@ -128,7 +129,7 @@ public class AccountServiceImpl implements AccountService {
             apiMsg.set(api.getAccount().accountBackup(aionKeys));
             if (apiMsg.isError()) {
                 logger.error("Unable to backup accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -137,7 +138,7 @@ public class AccountServiceImpl implements AccountService {
             KeyExport exportKey = apiMsg.getObject();
 
             if (exportKey == null)
-                throw new RuntimeException("Accounts cannot be backedup");
+                throw new BlockChainAcessException("Accounts cannot be backedup");
 
             List<String> keyfiles = exportKey.getKeyFiles().stream()
                     .map(k -> k.toString())
@@ -162,7 +163,7 @@ public class AccountServiceImpl implements AccountService {
             logger.debug("Importing account");
 
         if (passphrase == null || privateKey == null)
-            throw new RuntimeException("Account with null passphrase or private key cannot be imported");
+            throw new BlockChainAcessException("Account with null passphrase or private key cannot be imported");
 
 
         return accessor.call(((apiMsg, api) -> {
@@ -172,7 +173,7 @@ public class AccountServiceImpl implements AccountService {
             apiMsg.set(api.getAccount().accountImport(keyMap));
             if (apiMsg.isError()) {
                 logger.error("Unable to import account" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())

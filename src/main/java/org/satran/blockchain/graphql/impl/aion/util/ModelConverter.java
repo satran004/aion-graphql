@@ -11,6 +11,8 @@ import org.satran.blockchain.graphql.model.TxDetails;
 import org.satran.blockchain.graphql.model.input.TxArgsInput;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ModelConverter {
@@ -121,6 +123,9 @@ public class ModelConverter {
             String resJson = gson.toJson(aionResponse);
 
             CompileResponseBean bean = gson.fromJson(resJson, CompileResponseBean.class);
+
+//TODO        bean.setUserDoc(String.valueOf(aionResponse.getUserDoc()));
+//            bean.setDeveloperDoc(String.valueOf(aionResponse.getDeveloperDoc()));
 
             return bean;
     }
@@ -325,5 +330,26 @@ public class ModelConverter {
         bean.setStatus(res.getStatus());
 
         return bean;
+    }
+
+
+    public static List convert(List<Node> nodes) {
+
+        if(nodes == null)
+            return Collections.EMPTY_LIST;
+
+        return nodes.stream()
+                .map(node -> {
+                            NodeInfo nodeInfo = new NodeInfo();
+                            nodeInfo.setBlockNumber(node.getBlockNumber());
+                            nodeInfo.setLatency(node.getLatency());
+                            nodeInfo.setNodeId(node.getNodeId());
+                            nodeInfo.setP2pId(node.getP2pIP());
+                            nodeInfo.setP2pPort(node.getP2pPort());
+
+                            return nodeInfo;
+                        }
+                )
+                .collect(Collectors.toList());
     }
 }

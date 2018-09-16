@@ -32,9 +32,9 @@ public class TxnResolver {
         }
     }
 
-    public List<TxDetails> transactions(long fromBlock, long limit) {
+    public List<TxDetails> transactions(long before, long first) {
         try {
-            return txnService.getTransactions(fromBlock, limit);
+            return txnService.getTransactions(before, first);
         } catch (Exception e) {
             logger.error("Error getting transactions", e);
             throw new DataFetchingException(e.getMessage());

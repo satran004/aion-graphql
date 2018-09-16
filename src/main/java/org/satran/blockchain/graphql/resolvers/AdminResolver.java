@@ -66,8 +66,8 @@ public class AdminResolver {
         return adminService.getBlockDetailsByRange(blockStart, blockEnd);
     }
 
-    public List<Block> blocks(Long first, Long offset) {
-        return adminService.getBlocks(first, offset);
+    public List<Block> blocks(Long first, Long before) {
+        return adminService.getBlocks(first, before);
     }
 
 

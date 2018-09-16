@@ -46,7 +46,7 @@ public interface TxnService {
 
 
     //additional methods
-    public List<TxDetails> getTransactions(long fromBlock, long limit);
+    public List<TxDetails> getTransactions(long before, long first);
 
     public TxDetails getTransaction(String txHash);
 

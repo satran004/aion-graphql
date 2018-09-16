@@ -2,6 +2,7 @@ package org.satran.blockchain.graphql.impl.aion.service;
 
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.service.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class WalletServiceImpl implements WalletService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get wallet accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return ((List<Address>)apiMsg.getObject()).stream()
@@ -53,7 +54,7 @@ public class WalletServiceImpl implements WalletService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get wallet accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if(apiMsg.getObject() == null)
@@ -74,7 +75,7 @@ public class WalletServiceImpl implements WalletService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get wallet accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if(apiMsg.getObject() == null)
@@ -95,7 +96,7 @@ public class WalletServiceImpl implements WalletService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to lock the account" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -114,7 +115,7 @@ public class WalletServiceImpl implements WalletService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to unlock  account" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();

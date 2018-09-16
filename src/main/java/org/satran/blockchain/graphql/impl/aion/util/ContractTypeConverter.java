@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.satran.blockchain.graphql.exception.DataConversionException;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
 import org.satran.blockchain.graphql.model.Output;
-import org.satran.blockchain.graphql.model.Param;
+import org.satran.blockchain.graphql.model.input.Param;
 import org.satran.blockchain.graphql.model.SolidityType;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
 import org.slf4j.Logger;
@@ -127,16 +127,19 @@ public class ContractTypeConverter {
             if(logger.isDebugEnabled())
                 logger.debug(outputData.getClass().toString());
 
-            if(outputParams.size() <= i)
-                return;
+            if(outputParams.size() <= i) {
+                //no coversion
+                resultData.add(outputData);
+                continue;
+            }
 
             Output outputParam = outputParams.get(i);
 
             if(outputData instanceof Collection) {
-                Collection dataColl = ((Collection)outputData);
+                Collection<Object> dataColl = ((Collection)outputData);
 
-                Collection dataList =  (List) dataColl.stream()
-                        .map(obj -> convertOutput(outputParam, outputData))
+                Collection dataList =  dataColl.stream()
+                        .map(obj -> convertOutput(outputParam, obj))
                         .collect(Collectors.toList());
 
                 resultData.add(dataList);
@@ -189,19 +192,22 @@ public class ContractTypeConverter {
 
         } else if(outputParam.getType() == SolidityType._int) {
 
-            return (Integer)outputData;
+            //No need to convert
+            return outputData;//(long)outputData;
 
         } else if(outputParam.getType() == SolidityType._uint) {
-
-            return (Integer)outputData;
+            //no conversion required
+            return outputData;
+            //return (long)outputData;
 
         } else if(outputParam.getType() == SolidityType._string) {
 
             return String.valueOf(outputData);
 
+        } else {
+            return outputData;
         }
 
-        return null;
     }
 
     public static String byteToString(byte[] bytes, String enc) {

@@ -4,27 +4,16 @@ import java.util.List;
 
 public class CompileResponseBean {
 
-    private String contractName;
-
     private List<ContractAbiEntryBean> abiDefinition;
     private String abiDefString;
     private String code;
     private String compilerOptions;
     private String compilerVersion;
-//    private String developerDoc; //TODO
+//    private String developerDoc;
     private String language;
     private String languageVersion;
     private String source;
-//    private String userDoc; //TODO
-
-
-    public String getContractName() {
-        return contractName;
-    }
-
-    public void setContractName(String contractName) {
-        this.contractName = contractName;
-    }
+//    private transient String userDoc;
 
     public List<ContractAbiEntryBean> getAbiDefinition() {
         return abiDefinition;
@@ -90,6 +79,21 @@ public class CompileResponseBean {
         this.source = source;
     }
 
+   /* public String getDeveloperDoc() {
+        return developerDoc;
+    }
+
+    public void setDeveloperDoc(String developerDoc) {
+        this.developerDoc = developerDoc;
+    }
+
+    public String getUserDoc() {
+        return userDoc;
+    }
+
+    public void setUserDoc(String userDoc) {
+        this.userDoc = userDoc;
+    }*/
 
     public static class ContractAbiEntryBean {
 
@@ -156,6 +160,8 @@ public class CompileResponseBean {
         public void setType(String type) {
             this.type = type;
         }
+
+
     }
 
     public static class ContractAbiIOParamBean {

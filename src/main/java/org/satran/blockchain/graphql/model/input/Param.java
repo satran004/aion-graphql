@@ -1,4 +1,6 @@
-package org.satran.blockchain.graphql.model;
+package org.satran.blockchain.graphql.model.input;
+
+import org.satran.blockchain.graphql.model.SolidityType;
 
 import java.util.List;
 

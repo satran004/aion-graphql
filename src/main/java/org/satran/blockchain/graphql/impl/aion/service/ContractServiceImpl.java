@@ -6,11 +6,13 @@ import org.aion.api.type.ApiMsg;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.ContractBean;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
-import org.satran.blockchain.graphql.model.Param;
+import org.satran.blockchain.graphql.model.input.ConstructorArgs;
+import org.satran.blockchain.graphql.model.input.Param;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
 import org.satran.blockchain.graphql.service.ContractService;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +31,7 @@ import static org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter
 import static org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter.populateInputParams;
 
 @Repository
-public class ContractServiceImpl implements ContractService{
+public class ContractServiceImpl implements ContractService {
 
     private static final Logger logger = LoggerFactory.getLogger(ContractServiceImpl.class);
 
@@ -52,15 +55,15 @@ public class ContractServiceImpl implements ContractService{
     @Override
     public List<ContractBean> createFromSource​(String source, String from, long nrgLimit, long nrgPrice, BigInteger value, List<Param> params) {
 
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Trying to create contract from source");
 
         return accessor.call(((apiMsg, api) -> {
 
             try {
 
-                if(params == null || params.size() == 0) {
-                    if(value != null)
+                if (params == null || params.size() == 0) {
+                    if (value != null)
                         apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice, value));
                     else
                         apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice));
@@ -76,16 +79,62 @@ public class ContractServiceImpl implements ContractService{
                     throw new RuntimeException(apiMsg.getErrString());
                 }
 
-                Object result = apiMsg.getObject();
+
+                //Object result = apiMsg.getObject();
 
                 Map<Address, String> contractAddresses = api.getContractController().getContractMap();
 
                 List<ContractBean> contracts = new ArrayList<>();
 
-                for (Address contractAdd: contractAddresses.keySet()) {
+                for (Address contractAdd : contractAddresses.keySet()) {
                     IContract contract = api.getContractController().getContract(contractAdd);
 
-                    contracts.add(ModelConverter.convert(contract));
+                    ContractBean contractBean = ModelConverter.convert(contract);
+                    contracts.add(contractBean);
+                }
+
+                return contracts;
+
+            } finally {
+                api.getContractController().clear();
+            }
+
+        }));
+    }
+
+    @Override
+    public List<ContractBean> createMultiContractsFromSource​(String source, String from, long nrgLimit, long nrgPrice, BigInteger value, List<ConstructorArgs> constructorArgsList) {
+        if (logger.isDebugEnabled())
+            logger.debug("Trying to create contract from source");
+
+        return accessor.call(((apiMsg, api) -> {
+
+            try {
+                Map<String, List<ISolidityArg>> argsMap = new HashMap<>();
+
+                if(constructorArgsList != null) {
+                    for (ConstructorArgs args : constructorArgsList) {
+                        List<ISolidityArg> solParams = ContractTypeConverter.convertParamsToSolValues(args.getParams());
+                        argsMap.put(args.getContractName(), solParams);
+                    }
+                }
+
+                apiMsg.set(api.getContractController().createFromSource(source, Address.wrap(from), nrgLimit, nrgPrice, value, argsMap));
+
+                if (apiMsg.isError()) {
+                    logger.error("Error creating contract from source code : {} ", apiMsg.getErrString());
+                    throw new RuntimeException(apiMsg.getErrString());
+                }
+
+                Map<Address, String> contractAddresses = api.getContractController().getContractMap();
+
+                List<ContractBean> contracts = new ArrayList<>();
+
+                for (Address contractAdd : contractAddresses.keySet()) {
+                    IContract contract = api.getContractController().getContract(contractAdd);
+
+                    ContractBean contractBean = ModelConverter.convert(contract);
+                    contracts.add(contractBean);
                 }
 
                 return contracts;
@@ -100,7 +149,7 @@ public class ContractServiceImpl implements ContractService{
     @Override
     public ContractResponseBean execute(String fromAddress, String contractAddress, String abiDefinition,
                                         ContractFunction contractFunction, long nrgLimit, long nrgPrice, long txValue) {
-        if(logger.isDebugEnabled())
+        if (logger.isDebugEnabled())
             logger.debug("Execute contract function: {} ", contractFunction);
 
         //Prepare params
@@ -108,37 +157,37 @@ public class ContractServiceImpl implements ContractService{
         return accessor.call(((apiMsg, api) -> {
 
             try {
-                IContract contract = api.getContractController().getContractAt(Address.wrap(fromAddress),Address.wrap(contractAddress),
+                IContract contract = api.getContractController().getContractAt(Address.wrap(fromAddress), Address.wrap(contractAddress),
                         abiDefinition);
 
                 if (contract == null) {
                     logger.error("Contract not found or abi mismatch for given address {}  or abi : {}", contractAddress, abiDefinition);
-                    throw new RuntimeException("Contract not found or abi mismatch");
+                    throw new BlockChainAcessException("Contract not found or abi mismatch");
                 }
 
                 contract.newFunction(contractFunction.name());
                 populateInputParams(contractFunction, contract);
 
-                if(nrgLimit == 0)
+                if (nrgLimit == 0)
                     contract.setTxNrgLimit(NRG_LIMIT_TX_MAX);
 
-                if(nrgPrice == 0)
+                if (nrgPrice == 0)
                     contract.setTxNrgPrice(NRG_PRICE_MIN);
 
-                if(txValue != 0)
+                if (txValue != 0)
                     contract.setTxValue(txValue);
 
                 ApiMsg apiMsg1 = contract.build().execute();
 
-                if(apiMsg1.isError()) {
+                if (apiMsg1.isError()) {
                     logger.error("Error invoking contract function contract: {}  function {} : Error {}", contractAddress,
                             contractFunction.toString(), apiMsg1.getErrString());
-                    throw new RuntimeException("Error calling contract function " + apiMsg1.getErrString());
+                    throw new BlockChainAcessException("Error calling contract function " + apiMsg1.getErrString());
                 }
 
                 ContractResponse contractResponse = apiMsg1.getObject();
 
-                if(logger.isDebugEnabled())
+                if (logger.isDebugEnabled())
                     logger.debug("Contract execute response: {}", contractResponse);
 
 //                TxReceipt txReceipt = api.getTx().getTxReceipt(contractResponse.getTxHash()).getObject();
@@ -169,7 +218,7 @@ public class ContractServiceImpl implements ContractService{
 
                 if (contract == null) {
                     logger.error("Contract not found or abi mismatch for given address {}  or abi : {}", contractAddress, abiDefinition);
-                    throw new RuntimeException("Contract not found or abi mismatch");
+                    throw new BlockChainAcessException("Contract not found or abi mismatch");
                 }
 
                 contract.newFunction(contractFunction.name());
@@ -177,10 +226,10 @@ public class ContractServiceImpl implements ContractService{
 
                 ApiMsg apiMsg1 = contract.build().call();
 
-                if(apiMsg1.isError()) {
+                if (apiMsg1.isError()) {
                     logger.error("Error invoking contract function contract: {}  function {} : Error {}", contractAddress,
                             contractFunction.toString(), apiMsg1.getErrString());
-                    throw new RuntimeException("Error calling contract function " + apiMsg1.getErrString());
+                    throw new BlockChainAcessException("Error calling contract function " + apiMsg1.getErrString());
                 }
 
                 ContractResponse contractResponse = apiMsg1.getObject();

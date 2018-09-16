@@ -5,6 +5,7 @@ import org.aion.api.type.BlockDetails;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.model.Block;
@@ -37,7 +38,7 @@ public class AdminServiceImpl implements AdminService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -70,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get accounts" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -100,7 +101,7 @@ public class AdminServiceImpl implements AdminService {
             apiMsg.set(api.getAdmin().getBlockDetailsByHash(Hash256.wrap(hash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -109,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
             List<BlockDetails> blkDetails = ((List<BlockDetails>) apiMsg.getObject());
 
             if (blkDetails == null || blkDetails.size() == 0)
-                throw new RuntimeException("No block found with hash : " + hash);
+                throw new BlockChainAcessException("No block found with hash : " + hash);
 
             BlockDetails block = blkDetails.get(0);
 
@@ -133,7 +134,7 @@ public class AdminServiceImpl implements AdminService {
             apiMsg.set(api.getAdmin().getBlockDetailsByNumber(String.valueOf(blockNumber)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -142,7 +143,7 @@ public class AdminServiceImpl implements AdminService {
             List<BlockDetails> blkDetails = ((List<BlockDetails>) apiMsg.getObject());
 
             if (blkDetails == null || blkDetails.size() == 0)
-                throw new RuntimeException("No block found with number : " + blockNumber);
+                throw new BlockChainAcessException("No block found with number : " + blockNumber);
 
             BlockDetails block = blkDetails.get(0);
 
@@ -161,7 +162,7 @@ public class AdminServiceImpl implements AdminService {
             apiMsg.set(api.getAdmin().getBlockDetailsByNumber(blockNumbers));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -170,7 +171,7 @@ public class AdminServiceImpl implements AdminService {
             List<BlockDetails> blkDetails = ((List<BlockDetails>) apiMsg.getObject());
 
             if (blkDetails == null || blkDetails.size() == 0)
-                throw new RuntimeException("No block found with numbers");
+                throw new BlockChainAcessException("No block found with numbers");
 
             return blkDetails.stream()
                     .map(bd -> ModelConverter.convert(bd))
@@ -206,11 +207,11 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public  List<Block> getBlocks(Long first, long offset) {
+    public  List<Block> getBlocks(Long first, long before) {
 
 
-        if(first > 30)
-            throw new RuntimeException("Too many blocks. You can only request upto 30 blocks in a call");
+        if(first > 50)
+            throw new BlockChainAcessException("Too many blocks. You can only request upto 50 blocks in a call");
 
 
         //Find the latest block number if the blocknumber is not passed
@@ -229,10 +230,10 @@ public class AdminServiceImpl implements AdminService {
 
         return accessor.call(((apiMsg, api) -> {
 
-            if (offset == -1)
+            if (before == -1)
                 apiMsg.set(api.getAdmin().getBlockDetailsByLatest(first));
             else {
-                apiMsg.set(api.getAdmin().getBlockDetailsByRange(offset - first, offset));
+                apiMsg.set(api.getAdmin().getBlockDetailsByRange(before - first, before));
             }
 
             if (apiMsg.isError()) {

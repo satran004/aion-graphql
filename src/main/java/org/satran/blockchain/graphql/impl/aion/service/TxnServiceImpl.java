@@ -5,6 +5,7 @@ import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.impl.aion.util.TypeUtil;
 import org.satran.blockchain.graphql.model.*;
@@ -33,25 +34,25 @@ public class TxnServiceImpl implements TxnService {
         this.accessor = accessor;
     }
 
-    public List<TxDetails> getTransactions(long fromBlock, long limit) {
+    public List<TxDetails> getTransactions(long before, long first) {
         List<TxDetails> transactions = new ArrayList<TxDetails>();
 
         if (logger.isDebugEnabled())
             logger.debug("Getting transaction -----------");
 
-        if (fromBlock == -1) {
+        if (before == -1) {
             Block latestBlock = chainService.getLatestBlock();
 
             if (logger.isDebugEnabled())
                 logger.debug("Return block " + latestBlock.getNumber());
 
             if (latestBlock != null)
-                fromBlock = latestBlock.getNumber();
+                before = latestBlock.getNumber();
 
         }
 
-        while (transactions.size() < limit && fromBlock >= 0) {
-            Block blockDetails = chainService.getBlock(fromBlock);
+        while (transactions.size() < first && before >= 0) {
+            Block blockDetails = chainService.getBlock(before);
 
             if (blockDetails == null)
                 break;
@@ -61,7 +62,7 @@ public class TxnServiceImpl implements TxnService {
                 transactions.addAll(blockDetails.getTxDetails());
             }
 
-            fromBlock--;
+            before--;
         }
 
         return transactions;
@@ -76,7 +77,7 @@ public class TxnServiceImpl implements TxnService {
             apiMsg.set(api.getChain().getTransactionByHash(Hash256.wrap(txHash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the transaction {}", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -86,7 +87,7 @@ public class TxnServiceImpl implements TxnService {
 
             return ModelConverter.convert(transaction);
 //            if(blkDetails == null || blkDetails.size() == 0)
-//                throw new RuntimeException("No block found with number : " + number);
+//                throw new AionDaoAcessException("No block found with number : " + number);
 //
 //            BlockDetails block = blkDetails.get(0);
 //
@@ -118,7 +119,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to invoke call", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             byte[] bytes = apiMsg.getObject();
@@ -136,13 +137,13 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error compiling contract source code : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             Map<String, CompileResponse> response = apiMsg.getObject();
 
             if(response == null)
-                throw new RuntimeException("Error during compilation");
+                throw new BlockChainAcessException("Error during compilation");
 
             Map<String, CompileResponseBean> result = new HashMap<>();
 
@@ -171,7 +172,7 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error compiling contract source code : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             Map<String, CompileResponse> compileResponses = apiMsg.getObject();
@@ -205,7 +206,7 @@ public class TxnServiceImpl implements TxnService {
 
                 if (apiMsg.isError()) {
                     logger.error("Error deploying contract : {} ", apiMsg.getErrString());
-                    throw new RuntimeException(apiMsg.getErrString());
+                    throw new BlockChainAcessException(apiMsg.getErrString());
                 }
 
                 DeployResponse deployResponse = apiMsg.getObject();
@@ -227,7 +228,7 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error estimating Nrg : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -247,7 +248,7 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error estimating Nrg : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -265,7 +266,7 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error estimating Nrg : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -284,7 +285,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Error de-register : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -306,7 +307,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Error event register : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -331,7 +332,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Error calling api.getTx().fastTxbuild : {} " + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new AionDaoAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -348,7 +349,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get code : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             byte[] bytes = apiMsg.getObject();
@@ -367,7 +368,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get code : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             byte[] bytes = apiMsg.getObject();
@@ -386,7 +387,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get Msg status : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             MsgRsp msgResp = apiMsg.getObject();
@@ -405,7 +406,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get Nrg price : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -422,7 +423,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to solc version : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -439,7 +440,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get txn receipt : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             TxReceipt txReceipt = apiMsg.getObject();
@@ -458,7 +459,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send raw transaction : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             MsgRsp msgRsp = apiMsg.getObject();
@@ -479,7 +480,7 @@ public class TxnServiceImpl implements TxnService {
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send signed transaction request : {} ", apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             MsgRsp msgRsp = apiMsg.getObject();
@@ -501,7 +502,7 @@ public class TxnServiceImpl implements TxnService {
 
             if(apiMsg.isError()) {
                 logger.error("Error posting transaction : {} " + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
 //

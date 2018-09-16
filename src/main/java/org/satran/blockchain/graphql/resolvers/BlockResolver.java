@@ -20,9 +20,9 @@ public class BlockResolver {
         this.blockService = blockService;
     }
 
-    public List<Block> blocks(long first, long offset) {
+    public List<Block> blocks(long first, long before) {
         try {
-            return blockService.getBlocks(first, offset);
+            return blockService.getBlocks(first, before);
         } catch (Exception e) {
             logger.error("Error getting blocks", e);
             throw new DataFetchingException(e.getMessage());

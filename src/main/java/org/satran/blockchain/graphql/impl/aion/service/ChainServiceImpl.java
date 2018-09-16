@@ -4,6 +4,7 @@ import org.aion.api.type.Transaction;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
+import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
 import org.satran.blockchain.graphql.model.Block;
 import org.satran.blockchain.graphql.model.TxDetails;
@@ -35,7 +36,7 @@ public class ChainServiceImpl implements ChainService{
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get the latest block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             return apiMsg.getObject();
@@ -54,7 +55,7 @@ public class ChainServiceImpl implements ChainService{
             logger.debug("Getting balance for account: " + address + "  at block number: " + blockNumber);
 
         if (address == null || address.isEmpty())
-            throw new RuntimeException("Can't get balance for null account");
+            throw new BlockChainAcessException("Can't get balance for null account");
 
 
         return accessor.call(((apiMsg, api) -> {
@@ -65,7 +66,7 @@ public class ChainServiceImpl implements ChainService{
 
             if (apiMsg.isError()) {
                 logger.error("Unable to get balance for account {} : " + apiMsg.getErrString(), address);
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             BigInteger balance = apiMsg.getObject();
@@ -86,7 +87,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getBlockByHash(Hash256.wrap(hash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -95,7 +96,7 @@ public class ChainServiceImpl implements ChainService{
             org.aion.api.type.Block block = apiMsg.getObject();
 
             if (block == null)
-                throw new RuntimeException("No block found with hash : " + hash);
+                throw new BlockChainAcessException("No block found with hash : " + hash);
 
             Block b = ModelConverter.convert(block);
             return b;
@@ -112,7 +113,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getBlockByNumber(number));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -121,7 +122,7 @@ public class ChainServiceImpl implements ChainService{
             org.aion.api.type.Block block = apiMsg.getObject();
 
             if (block == null)
-                throw new RuntimeException("No block found with number : " + number);
+                throw new BlockChainAcessException("No block found with number : " + number);
 
             Block b = ModelConverter.convert(block);
             return b;
@@ -138,7 +139,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getBlockTransactionCountByHash(Hash256.wrap(hash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the transaction count for block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -158,7 +159,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getBlockTransactionCountByNumber(number));
             if (apiMsg.isError()) {
                 logger.error("Unable to get the transaction count for block" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -178,7 +179,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getNonce(Address.wrap(address)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get nonce for the address" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -199,7 +200,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getStorageAt(Address.wrap(address), position));
             if (apiMsg.isError()) {
                 logger.error("Unable to get storage for the address" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -220,7 +221,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getStorageAt(Address.wrap(address), position, blockNumber));
             if (apiMsg.isError()) {
                 logger.error("Unable to get storage for the address" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -240,7 +241,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getTransactionByBlockNumberAndIndex(blockNumber, index));
             if (apiMsg.isError()) {
                 logger.error("Unable to get transaction" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -262,7 +263,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getTransactionByHash(Hash256.wrap(txnHash)));
             if (apiMsg.isError()) {
                 logger.error("Unable to get transaction" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())
@@ -284,7 +285,7 @@ public class ChainServiceImpl implements ChainService{
             apiMsg.set(api.getChain().getTransactionCount(Address.wrap(address), blockNumber));
             if (apiMsg.isError()) {
                 logger.error("Unable to get transaction count" + apiMsg.getErrString());
-                throw new RuntimeException(apiMsg.getErrString());
+                throw new BlockChainAcessException(apiMsg.getErrString());
             }
 
             if (logger.isDebugEnabled())

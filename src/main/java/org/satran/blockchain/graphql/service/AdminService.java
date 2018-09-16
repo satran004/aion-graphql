@@ -27,5 +27,5 @@ public interface AdminService {
 
 //    getBlockSqlByRange​(java.lang.Long blkStart, java.lang.Long blkEnd)
 
-    public  List<Block> getBlocks(Long first, long offset);
+    public  List<Block> getBlocks(Long first, long before);
 }

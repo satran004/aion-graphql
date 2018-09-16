@@ -1,145 +1,465 @@
 scalar Map
-scalar Any # String | Int | Float | Boolean
 
+#String | Int | Float | Boolean
+scalar Any
+
+#These are read-only api to get information from blockchain. These apis don't change the blockchain data.
 type Query {
 
+    # Provides few high-level methods to get block information easily. The implementation internally uses adminApi to get block
+    #information
     blockApi: BlockQuery
 
+    #Provides transaction specific methods. All methods in this api are read-only. That means they don't change the blockchain state.
+    #Please refer to txnApi in Mutation for methods that are used to change blockchain's state.
     txnApi: TxnQuery
 
+    #Provides account related information
+    #For account manipulation, use accountApi in Mutation.
     accountApi: AccountQuery
 
+    #Provides methods to contact with Aion kernel for certain purpose. It provides read-only apis.
+    #For manipulation, refer to adminApi in Mutation.
     adminApi: AdminQuery
 
+    #Provides methods for fetching blockchain specific details such as blocks and transactions.
     chainApi: ChainQuery
 
+    #Provides methods for fetching the Aion blockchain network status and the specific information.
     netApi: NetQuery
 
+    #This api is an interface for the class Wallet. Assists in account related interactions.
     walletApi: WalletQuery
 
+    #This api provides the user with convenient methods of encoding and decoding contract calls and transactions from the Aion Kernel.
+    #This api can be used to deploy a smart contract and invoke smart contract's method.
     contractApi: ContractQuery
 }
 
+#Using Mutation queries, user can change the state in blockchain. e.g; post transaction, account unlock, contract deploy and more.
 type Mutation {
 
+    #Provides methods to manipulate accounts.
     accountApi: AccountMutator
 
+    #Provides methods specific to Wallet mutation.
     walletApi: WalletMutator
 
+    #Provides transaction specific mutation methods.
     txnApi: TxnMutator
 
+    #Provide contract specific methods like contract deploy, contract method execution.
     contractApi: ContractMutator
 }
 
 type BlockQuery {
-    blocks(first: Long = 10, offset: Long = -1): [Block]
+
+    #Get blocks starting from the block number passed through "before" parameter.
+    #Returns:
+    #If first=n & before=blkNumber, n number of blocks before specified blkNumber
+    #If before = -1, n number of recent blocks.
+    #
+    #Arguments:
+    #first - No of blocks to return,
+    #before - start block number
+    blocks(first: Long = 10, before: Long = -1): [Block]
+
+    #Get block details for the given block number
     block(number: Long!): Block
 }
 
 type TxnQuery {
-    transaction(txHash: String!): TxDetails
-    transactions(fromBlock: Long = -1, limit: Long!): [TxDetails]
 
+    #Transaction details for a given transaction hash.
+    # Arguments
+    # txHash- Transaction Hash
+    transaction(txHash: String!): TxDetails
+
+    #Get transactions starting from  the block number passed through "before" parameter.
+    #Returns:
+    #If first=n & before=blkNumber, n number of transactions before specified blkNumber
+    #If before = -1, n number of recent transactions.
+    #
+    #Arguments:
+    #before - Start block number,
+    #first - number of transactions to fetch
+    transactions(before: Long = -1, first: Long!): [TxDetails]
+
+    #Estimates the Nrg required to execute transaction.
+    #
+    #Arguments:
+    #code- Contract source code
     estimateNrg(code: String!): Long
+
+    #Estimates the Nrg required to execute transaction.
+    #
+    #Arguments:
+    #txArgs - Object of TxArgsInput
     estimateNrgByTxArgs(txArgs: TxArgsInput!): Long
 
+    #Retrieves the compiled code for a given contract at given blockNumber
+    #or the compiled code with checking latest block if blockNumber is not passed.
+    #
+    #Agruments:
+    #address - Deployed contract address,
+    #blockNumber - Block number of which the contract by long value was committed on. Ignore this argument or indicate
+    #-1L to check for the latest block.
     code(address: String!, blockNumber: Long = -1): String
 
+    #Check the transaction progress given by the api session hash value.
+    #
+    #Arguments:
+    #msgHash - The session hash the api client sent.
     msgStatus(msgHash: String!): MsgResp
+
+    #Returns a Long value representing the recommended energy price.
     nrgPrice: Long
+
+    #Get the kernel contained solidity compiler version.
     solcVersion: String
+
+    #Retrieves the transaction receipt given a transaction hash.
+    #
+    #Arguments:
+    #txnHash - Transaction hash
     txReceipt(txnHash: String!): TxReceipt
 
 }
 
-type TxnMutator {
-
-    call(args: TxArgsInput!): String
-    compile(code: String!): Map
-    contractDeploy(contractDeploy: ContractDeployInput!): [DeployResponse]
-
-    eventDeregister(evts: [String], address: String): Boolean
-    eventRegister(evts: [String]!, eventFilter: ContractEventFilterInput!, address: String!): Boolean
-
-    fastTxBuild(args: TxArgsInput!, call: Boolean!): Boolean
-
-    sendRawTransaction(encodedTx: String!): MsgResp
-    sendSignedTransaction(txArgs: TxArgsInput!, privateKey: String!): MsgResp
-    sendTransaction(txArgs: TxArgsInput!): MsgResp
-
-}
-
 type AccountQuery {
+
+    #Get account object with attributes like "balance" for a given publicKey/address at the specified blockNumber.
+    #If blockNumber=-1 or missing, returns the account object at th latest block.
+    #
+    #Argument:
+    #publicKey - PublicKey of the account,
+    #blockNumber - Block number
     account(publicKey: String!, blockNumber: Long = -1) : Account
 }
 
 type AdminQuery {
+
+    #Get detailed account information, given a string of addresses
+    #
+    #Arguments:
+    #addresses - the class String represent by the list of accounts separated by comma [,]. eg. 0xA,0xB,0xC ...
     accountsByAddressString(addresses: String!): [Account]
+
+    #Get detailed account information, given a list of addresses.
+    #
+    #Arguments:
+    #addresses - List of addresses
     accounts(addresses: [String]!): [Account]
 
     #blockByHash(hash: String!): Block
+
+    #Get detailed block information include all transactions by given the block number.
+    #
+    #Arguments:
+    #number - Block number
     blockByNumber(number: Long!): Block
 
+    #Get block information, for all blocks in range (latest - n, latest]
+    #
+    #Arguments:
+    #count - number of blocks from latest for which to retrieve block details
     blocksByLatest(count: Long!): [Block]
+
+    #Get detailed block information including all transactions by given the List of block numbers.
+    #
+    #Arguments:
+    #numbers - List of block numbers
     blocksByNumber(numbers: [Long]!): [Block]
+
+    #Get detailed block information including all transactions given the starting/end block number
+    #
+    #Arguments:
+    #blockStart - the start block number.
+    #blockEnd - the end of block number.
     blocksByRange(blockStart: Long!, blockEnd: Long!): [Block]
 
-    blocks(first: Long!, offset: Long!): [Block]
+    #Get detailed block information starting from the block number passed through "before" parameter.
+    #Returns:
+    #If first=n & before=blkNumber, n number of blocks before the specified blkNumber
+    #If before = -1, n number of recent blocks.
+    blocks(first: Long!, before: Long!): [Block]
 }
 
 type ChainQuery {
+
+    #Returns the current block number of the Aion Kernel connected.
     blockNumber: Long
+
+    #Returns the balance of the account address at latest block number.
+    #
+    #Arguments:
+    #address - Account address
     balance(address: String!): BigInteger
+
+    #Returns a Long value representing the balance of the account address at a certain block number.
+    #
+    #Arguments:
+    #address - Account address,
+    #blockNumber - the block number by long value at which the balance of the address should be retrieved from.
     balanceByBlockNumber(address: String!, blockNumber: Long!): BigInteger
 
+    #Retrieves a block given the block hash.
+    #
+    #Arguments:
+    #hash - 32 bytes hash of the desired block
     blockByHash(hash: String!): Block
+
+    #Retrieves a block given the block number.
+    #
+    #Arguments:
+    #number - the block number by long value of the desired block.
     blockByNumber(number: Long!): Block
 
+    #Retrieves the total transactions within a block at a given block hash.
+    #
+    #Arguments:
+    #hash - 32 bytes hash of the desired block.
     blockTransactionCountByHash(hash: String!): Long
+
+    #Retrieves the total transactions within a block at a given block number.
+    #
+    #Arguments:
+    #blockNumber - the block number by long value of the desired block.
     blockTransactionCountByNumber(number: Long!): Long
 
+    #Returns a BigInteger representing the nonce of the account address at the latest block number.
+    #
+    #Arguments:
+    #address - Account address
     nonce(address: String!): BigInteger
-    storageAt(address: String!, postion: Int!, blockNumber: Long = 0): String
 
+    #Get the storage at a specific position of an address by current blockchain database status.
+    #
+    #Arguments:
+    #address - account address,
+    #position - the index position of the storage,
+    #blockNumber -  the block number by long value of the desired block.
+    storageAt(address: String!, postion: Int!, blockNumber: Long = -1): String
+
+    #Gets a transaction based on the block number and transaction index.
+    #
+    #Arguments:
+    #blockNumber - The block number by long value of the desired block,
+    #index - The transaction position by int value of the transaction been stored into the desired block.
     transactionByBlockNumberAndIndex(blockNumber: Long!, index: Long!): TxDetails
-    transactionByHash(txHash: String!): TxDetails
-    transactionCount(addres: String!, blockNumber: Long!): Long
 
+    #Retrieves the transaction given the transaction hash.
+    #
+    #Arguments:
+    #txHash: 32 bytes hash of the desired transaction
+    transactionByHash(txHash: String!): TxDetails
+
+    #Retrieves the total transactions committed by a certain account address at a given block number.
+    #
+    #Arguments:
+    #address - Account address,
+    #blockNumber - The block number by long value of the desired block.
+    transactionCount(addres: String!, blockNumber: Long!): Long
 }
 
 type NetQuery {
+    #Check connected node's sync status.
     isSyncing: Boolean
+
+    #Returns the current version of the Aion modules.
     protocol: Protocol
-    # activeNodes: [NodeInfo]
+
+    #Returns the current active connected nodes.
+    activeNodes: [NodeInfo]
+
+    #Returns a int value the connecting peers number of the connecting kernel.
+    peerCount: Int
+
+    #Returns the whole consensus network nodes list.
+    staticNodes: [NodeInfo]
+
+    #Returns a boolean value if the client is actively listening for network connections.
+    isListening: Boolean
+
+    #Check connecting node syncing detailed information.
+    syncInfo: SyncInfo
 }
 
 type WalletQuery {
-    #Wallet service apis
+    #Retrieves a list of accounts currently available on the local node.
     accounts: [String]
+
+    #Returns the default account of the user latest set.
     defaultAccount: String
+
+    #Returns the default miner account of the backend. miner account refers to the address utilized when isMining.
     minerAccount: String
+}
+
+type ContractQuery {
+
+    #Invoke the contract method
+    #
+    #Arguments:
+    #from - Sets the message sender address for function be executed,
+    #contractAddress - Contract address,
+    #abi - AbiDefinition String,
+    #function - ContractFunction object which contains function name and other required properties
+    call(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!): ContractResponse
 }
 
 #For mutation
 type AccountMutator {
+
+    #Create new accounts by given password.
+    #
+    #Arguments:
+    #passphrase - The list of String represent the passphrase choose for each new generate account,
+    #privateKey - The boolean value represent the key return including the private key or just the account address.
     accountCreate(passphrase: [String!], privateKey: Boolean = false): [AccountKey]
+
+    #Export accounts by given the password and the account address
+    #
+    #Arguments:
+    #keys -  AccountKeyExportInput object represent the passphrase and the account public address.
     accountExport(keys: [AccountKeyExportInput!]): AccountKeyExport
+
+    #Export accounts by given the password and the account address
+    #
+    #Arguments:
+    #keys -  AccountKeyExportInput object represent the passphrase and the account public address.
     accountBackup(keys: [AccountKeyExportInput!]): AccountKeyExport
-    #Return list of accounts which cannot be imported
+
+    #Import account by given the password and the private key.
+    #
+    #Arguments:
+    #privateKey: Private key of the account.
+    #passphrase: Passphrase of the account
     accountImport(privateKey: String!, passphrase: String!): Boolean
 }
 
 type WalletMutator {
-    lockAccount(accountAddress: String!, passphrase: String!): Boolean
-    unlockAccount(accountAddress: String!, passphrase: String!, duration: Int = 60): Boolean
+
+    #Lock the desired account given the correct passphrase.
+    #
+    #Arguments:
+    #address - account address,
+    #passphrase - Passphrase of the account
+    lockAccount(address: String!, passphrase: String!): Boolean
+
+    #Unlocks the desired account for the specified duration(in seconds) given the correct passphrase,
+    #
+    #Arguments:
+    #address - Account address,
+    #passphrase - Passphrase of the account,
+    #duration - Unlock duration in second. Default value is 60 sec.
+    unlockAccount(address: String!, passphrase: String!, duration: Int = 60): Boolean
 }
 
-type ContractQuery {
-    call(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!): ContractResponse
+
+type TxnMutator {
+
+    #Initiates a call to retrieve the result from a contract.
+    #
+    #Arguments:
+    #args - Tx arguments
+    call(args: TxArgsInput!): String
+
+    #Sends the source code to be compiled in the backend, and returns all relevant information about the compiled code.
+    #Will throw if backend compiler is unavailable or code is improperly formatted.
+    #
+    #Arguments:
+    #code - The class String of the source code to be compiled.
+    compile(code: String!): Map
+
+    #Deploys a new contract onto the Aion blockchain.
+    #
+    #Arguments:
+    #contractDeploy - Contract deploy arguments
+    contractDeploy(contractDeploy: ContractDeployInput!): [DeployResponse]
+
+    #Remove the listening events by given the event name and the contract address.
+    #
+    #Arguments:
+    #evts - The list of the class String represent the events the user want to listen,
+    #address - Contract address
+    eventDeregister(evts: [String], address: String): Boolean
+
+    #Register the events the user want to listen by given the event name, event filter and the contract address.
+    #
+    #Arguments:
+    #evts - The list of the class String represent the events the user want to listen,
+    #eventFilter - ContractEventFilter, represents the event query conditions,
+    #address - Contract address
+    eventRegister(evts: [String]!, eventFilter: ContractEventFilterInput!, address: String!): Boolean
+
+    #Pre-build TxArgs for increasing sendTransaction speeds if these transaction must been executed repeatedly.
+    #This function provides no functionality to assist with encoding or decoding transaction data.
+    #Users may choose to either use the more convenient contractApi for contract transactions.
+    #
+    #Arguments:
+    #args - Tx Arguments,
+    #call - The boolean value represent the function of the contract is a call function.
+    fastTxBuild(args: TxArgsInput!, call: Boolean!): Boolean
+
+    #Initiates a transaction given the encoded transaction byte array with the sender's signature. This function provides
+    #no functionality to assist with encoding or decoding transaction data. Users may choose to either use the more
+    #convenient contractApi class for contract transactions.
+    #
+    #Arguments:
+    #encodedTx - The encoded transaction byte array with the sender's signature.
+    sendRawTransaction(encodedTx: String!): MsgResp
+
+    #Initiates a transaction. Send a transaction including the raw transaction data and signed with the sender's key.
+    #
+    #Argument:
+    #txArgs - Tx arguments,
+    #privateKey - Sender's private key
+    sendSignedTransaction(txArgs: TxArgsInput!, privateKey: String!): MsgResp
+
+    #Initiates a transaction.
+    #
+    #Arguments:
+    #txArgs - Tx arguments
+    sendTransaction(txArgs: TxArgsInput!): MsgResp
+
 }
 
 type ContractMutator {
-    createFromSource(source: String!, from: String!, nrgLimit: Long = 0, nrgPrice: Long = 0, value: BigInteger) : [Contract]!
+    #Multiple contract create method for deploy contracts on the Aion network.
+    #When the constructorArgs are passed, api assumes that there is only one contract.
+    #To pass constructorArgs for multiple contracts in one call, use "createFromSourceMultipleContracts" method instead.
+    #
+    #Arguments:
+    #source - The class String represent the contract source code. It could be multiple contracts,
+    #from - The sender or the contract owner whom deploy the contract,
+    #nrgLimit - The long value represent the maximum energy consume during this contract deploy been allowed,
+    #nrgPrice - The long value represent the unit price of the energy the contract deployer want to pay,
+    #value - The class BigInteger represent how many balance of the the sender's account want to send during this deploy,
+    #constructorArgs - Represent the contract constructor arguments when the contract has the constructor. It assums that there is only one contract.
+    createFromSource(source: String!, from: String!, nrgLimit: Long = 0, nrgPrice: Long = 0, value: BigInteger = 0, constructorArgs: [Param] = []) : [Contract]!
+
+    #Multiple contract create methods for deploy contracts on the Aion network.
+    #
+    #Arguments:
+    #source - The class String represent the contract source code. It could be multiple contracts,
+    #from - The sender or the contract owner whom deploy the contract,
+    #nrgLimit - The long value represent the maximum energy consume during this contract deploy been allowed,
+    #nrgPrice - The long value represent the unit price of the energy the contract deployer want to pay,
+    #value - The class BigInteger represent how many balance of the the sender's account want to send during this deploy,
+    #constructorArgsList - Represent the contract constructor arguments for mutiple contract when the contract has the constructor.
+    createMultiContractsFromSource​(source: String!, from: String!, nrgLimit: Long = 0, nrgPrice: Long = 0, value: BigInteger = 0, constructorArgsList: [ConstructorArgs]) : [Contract]!
+
+    #Executes the built transaction to invoke the contract method
+    #
+    #Arguments:
+    #from - The sender's address,
+    #contractAddress - Contract address,
+    #abi - AbiDefinition string of the deployed contract,
+    #function - ContractFunction object, properties like function name etc,
+    #nrgLimit - The long value represent the maximum energy consume during this contract deploy been allowed,
+    #nrgPrice - The long value represent the unit price of the energy the contract deployer want to pay,
+    #txVAlue - he class BigInteger represent how many balance of the the sender's account want to send during this call if any
     execute(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!, nrgLimit: Long = 0, nrgPrice: Long = 0, txValue: Long = 0): ContractResponse
 }
 
@@ -370,15 +690,20 @@ input ContractFunction {
     outputs: [Output]
 }
 
+input Param {
+    type: SolidityType
+    value: Any
+    values: [Any]
+}
+
 input Output {
     type: SolidityType
     encoding: String
 }
 
-input Param {
-    type: SolidityType
-    value: Any
-    values: [Any]
+input ConstructorArgs {
+    contractName: String!
+    params: [Param]!
 }
 
 type ContractResponse {
@@ -388,5 +713,21 @@ type ContractResponse {
     status: String
     msgHash: String
     error: String
+}
+
+type NodeInfo {
+    blockNumber: Long
+    latency: Int
+    nodeId: String
+    p2pId: String
+    p2pPort: Int
+}
+
+type SyncInfo {
+    chainBestBlock: Long
+    maxImportBlocks: Long
+    networkBestBlock: Long
+    startingBlock: Long
+    isSyncing: Boolean
 }
 

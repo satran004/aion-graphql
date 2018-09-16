@@ -3,7 +3,7 @@
 
 Demo: http://graphql.aion-tools.info/playground.html
 
-API Doc: <a href="https://satran004.github.io/aion-graphql-docs/www/"> Aion GraphQL API </a>
+API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL API </a>
 
 This project provides GraphQL REST endpoint to query Aion blockchain.
 It is using AION java api to communicate with Aion blockchain.

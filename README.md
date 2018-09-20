@@ -26,7 +26,7 @@ The following apis are currently supported :
 - walletApi
 - contractApi
 
-For detail information, please visit this <a href="https://satran004.github.io/aion-graphql-docs/www/"> API page </a>
+For detail information, please visit this <a href="https://satran004.github.io/aion-graphql-docs/"> API page </a>
 
 The project will be enhanced to support other read and write operations.
 

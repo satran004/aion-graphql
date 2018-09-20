@@ -1,6 +1,7 @@
 package org.satran.blockchain.graphql.resolvers;
 
 import org.satran.blockchain.graphql.exception.DataFetchingException;
+import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.service.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -352,4 +352,32 @@ public class ModelConverter {
                 )
                 .collect(Collectors.toList());
     }
+
+    public static ContractEventBean convert(ContractEvent contractEvent) {
+        ContractEventBean bean = new ContractEventBean();
+
+        if(contractEvent.getAddress() != null)
+            bean.setAddress(contractEvent.getAddress().toString());
+
+        if(contractEvent.getBlockHash() != null)
+            bean.setBlockHash(contractEvent.getBlockHash().toString());
+
+        bean.setBlockNumber(contractEvent.getBlockNumber());
+
+        if(contractEvent.getData() != null) //TODO
+            bean.setData(String.valueOf(contractEvent.getData()));
+
+        bean.setEventName(contractEvent.getEventName());
+        bean.setLogIndex(contractEvent.getLogIndex());
+        bean.setRemoved(contractEvent.isRemoved());
+
+        if(bean.getTxHash() != null)
+            bean.setTxHash(contractEvent.getTxHash().toString());
+        bean.setTxIndex(contractEvent.getTxIndex());
+
+        bean.setResults(contractEvent.getResults());
+
+        return bean;
+
+    }
 }

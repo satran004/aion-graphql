@@ -51,4 +51,8 @@ public class ContractMutator {
         return contractService.execute(fromAddress, contractAddress, abiDefinition, contractFunction, nrgLimit, nrgPrice, txValue);
 
     }
+
+    public boolean deregisterAllEvents() {
+        return contractService.deregisterAllEvents();
+    }
 }

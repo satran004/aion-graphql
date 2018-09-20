@@ -1,8 +1,12 @@
 rpc:
-  endpoint: "tcp://192.168.0.96:8548"
+  endpoint: "tcp://localhost:8547"
 
 graphql:
   servlet:
     mapping: /graphql
     enabled: true
     corsEnabled: true
+    subscriptions:
+      websocket:
+        path: /subscriptions
+

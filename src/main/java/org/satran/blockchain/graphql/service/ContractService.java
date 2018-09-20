@@ -7,6 +7,7 @@ import org.satran.blockchain.graphql.model.input.Param;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.Flow;
 
 public interface ContractService {
 
@@ -28,5 +29,10 @@ public interface ContractService {
     public ContractResponseBean call(String fromAddress, String contractAddress, String abiDefinition,
                                      ContractFunction contractFunction);
 
+    public List<ContractEventBean> getContractEvents(String ownerAddress, String contractAddress, String abiDefinition,
+                                        List<String> events, ContractEventFilterBean eventFilterBean, List<Output> outputTypes);
+
+
+    public boolean deregisterAllEvents();
 
 }

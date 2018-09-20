@@ -306,6 +306,9 @@ type ContractQuery {
     #abi - AbiDefinition String,
     #function - ContractFunction object which contains function name and other required properties
     call(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!): ContractResponse
+
+    events(from: String!, contractAddress: String!, abi: String!, events: [String!], contractEventFilter: ContractEventFilterInput, resultTypes: [Output]): [ContractEvent]
+
 }
 
 #For mutation
@@ -461,6 +464,9 @@ type ContractMutator {
     #nrgPrice - The long value represent the unit price of the energy the contract deployer want to pay,
     #txVAlue - he class BigInteger represent how many balance of the the sender's account want to send during this call if any
     execute(from: String!, contractAddress: String!, abi: String!, function: ContractFunction!, nrgLimit: Long = 0, nrgPrice: Long = 0, txValue: Long = 0): ContractResponse
+
+    #This stops all events publisher currently started in graphql subscription layer through websocket. (@experimental feature)
+    deregisterAllEvents: Boolean
 }
 
 type Block {
@@ -730,4 +736,34 @@ type SyncInfo {
     startingBlock: Long
     isSyncing: Boolean
 }
+
+######################
+#Subscription queries
+#####################
+
+type Subscription {
+    #Register the events the user want to listen by given the event name, event filter and the contract address.
+    #
+    #Arguments:
+    #evts - The list of the class String represent the events the user want to listen,
+    #eventFilter - ContractEventFilter, represents the event query conditions,
+    #address - Contract address
+    registerEvents(ownerAddress:String!, contractAddress: String!, abi: String, events: [String!], eventFilter:  ContractEventFilterInput, outputType: [Output]): ContractEvent
+
+}
+
+type ContractEvent {
+    address: String
+    blockHash: String
+    txHash: String
+    data: String
+    blockNumber: Long
+    logIndex: Int
+    eventName: String
+    removed: Boolean
+    results: [Any]
+}
+
+
+
 

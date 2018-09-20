@@ -6,6 +6,7 @@ import org.aion.api.sol.*;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.satran.blockchain.graphql.exception.DataConversionException;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
 import org.satran.blockchain.graphql.model.Output;
@@ -115,14 +116,23 @@ public class ContractTypeConverter {
             return;
         }
 
+        List<Object> rawResData = contractResponse.getData();
+        List<Object> resultData = convertSolidityObjectToJavaObject(outputParams, rawResData);
+
+        responseBean.setData(resultData);
+
+    }
+
+    @NotNull
+    public static List<Object> convertSolidityObjectToJavaObject(List<Output> outputParams, List<Object> rawResData) {
         List<Object> resultData = new ArrayList<>();
 
         if(logger.isDebugEnabled())
             logger.debug("** Print output **");
 
-        for(int i=0; i<contractResponse.getData().size(); i++) {
+        for(int i = 0; i< rawResData.size(); i++) {
 
-            Object outputData = contractResponse.getData().get(i);
+            Object outputData = rawResData.get(i);
 
             if(logger.isDebugEnabled())
                 logger.debug(outputData.getClass().toString());
@@ -159,9 +169,7 @@ public class ContractTypeConverter {
                 resultData.add(value);
             }
         }
-
-        responseBean.setData(resultData);
-
+        return resultData;
     }
 
     public static Object convertOutput(Output outputParam, Object outputData) {

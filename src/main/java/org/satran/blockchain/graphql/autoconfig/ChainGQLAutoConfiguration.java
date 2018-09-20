@@ -10,10 +10,12 @@ import graphql.schema.GraphQLScalarType;
 import org.satran.blockchain.graphql.exception.CoercingParseLiteralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -96,6 +98,7 @@ public class ChainGQLAutoConfiguration {
     public GraphQLScalarType object() {
         return ANY_SCALAR;
     }
+
    /*public static final GraphQLScalarType hash256 = new GraphQLScalarType("Hash256", "A Hash256 scalar", new Coercing() {
 
         public Object serialize(Object dataFetcherResult) {

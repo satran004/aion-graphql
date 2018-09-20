@@ -3,14 +3,16 @@ package org.satran.blockchain.graphql.impl.aion.service;
 import org.aion.api.IContract;
 import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ApiMsg;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.exception.BlockChainAcessException;
+import org.satran.blockchain.graphql.impl.aion.service.event.rx.ContractEventHolder;
 import org.satran.blockchain.graphql.impl.aion.util.ContractTypeConverter;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
-import org.satran.blockchain.graphql.model.ContractBean;
-import org.satran.blockchain.graphql.model.ContractResponseBean;
+import org.satran.blockchain.graphql.model.*;
 import org.satran.blockchain.graphql.model.input.ConstructorArgs;
 import org.satran.blockchain.graphql.model.input.Param;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
@@ -18,12 +20,12 @@ import org.satran.blockchain.graphql.service.ContractService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.ui.Model;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Flow;
+import java.util.stream.Collectors;
 
 import static org.aion.api.ITx.NRG_LIMIT_TX_MAX;
 import static org.aion.api.ITx.NRG_PRICE_MIN;
@@ -37,8 +39,11 @@ public class ContractServiceImpl implements ContractService {
 
     private AionBlockchainAccessor accessor;
 
-    public ContractServiceImpl(AionBlockchainAccessor accessor) {
+    private ContractEventHolder contractEventHolder;
+
+    public ContractServiceImpl(AionBlockchainAccessor accessor, ContractEventHolder contractEventHolder) {
         this.accessor = accessor;
+        this.contractEventHolder = contractEventHolder;
     }
 
     @Override
@@ -242,5 +247,65 @@ public class ContractServiceImpl implements ContractService {
                 api.getContractController().clear();
             }
         }));
+    }
+
+    @Override
+    public List<ContractEventBean> getContractEvents(String ownerAddress, String contractAddress, String abiDefinition, List<String> events, ContractEventFilterBean eventFilterBean,
+                                                     List<Output> outputTypes) {
+        if (logger.isDebugEnabled())
+            logger.debug("Registering for contract events: {} ", events);
+
+        //Prepare params
+        return accessor.call(((apiMsg, api) -> {
+
+            try {
+                IContract contract = api.getContractController().getContractAt(Address.wrap(ownerAddress), Address.wrap(contractAddress),
+                        abiDefinition);
+
+                if (contract == null || contract.error()) {
+                    logger.error("Contract not found or abi mismatch for given address or some error while creating the contract {}  or abi : {}", contractAddress, abiDefinition);
+                    throw new BlockChainAcessException("Contract not found or abi mismatch or error in creation");
+                }
+
+                contract.newEvents(events);
+
+                if(eventFilterBean != null) {
+                    ContractEventFilter filter = ModelConverter.convert(eventFilterBean);
+
+                    contract.register(filter);
+                } else
+                    contract.register();
+
+                List<ContractEvent> contractEvents = contract.getEvents();
+
+                if (contractEvents != null && contractEvents.size() != 0) {
+
+                    List<ContractEventBean> beans = contractEvents.stream()
+                            .map(cb -> {
+                                ContractEventBean ceb = ModelConverter.convert(cb);
+
+                                List<Object> convertedOutputData = ContractTypeConverter.convertSolidityObjectToJavaObject(outputTypes, cb.getResults());
+                                ceb.setResults(convertedOutputData);
+
+                                return ceb;
+                            })
+                            .collect(Collectors.toList());
+
+                    return beans;
+                } else {
+                    return Collections.EMPTY_LIST;
+                }
+
+            } finally {
+                api.getContractController().clear();
+            }
+        }));
+    }
+
+    @Override
+    public boolean deregisterAllEvents() {
+
+        contractEventHolder.deleteAll();
+        return true;
     }
 }

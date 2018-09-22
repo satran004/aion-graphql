@@ -40,12 +40,11 @@ $> ./gradlew clean build
 
 $> rpc_endpoint=tcp://[kernel-host]:8547 ./gradlew bootRun
 
-After running the above command, GraphQL endpoint can be accessed through the following url
 
+After running the above command, GraphQL endpoint can be accessed through the following url
 http://[host]:[port]/graphql
 
 If you want to test GraphQL apis on the browser, try the following url
-
 http://[host]:[port]/playground.html
   
 

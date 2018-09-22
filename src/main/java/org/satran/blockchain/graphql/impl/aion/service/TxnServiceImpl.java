@@ -16,6 +16,7 @@ import org.satran.blockchain.graphql.service.BlockService;
 import org.satran.blockchain.graphql.service.TxnService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -28,6 +29,9 @@ public class TxnServiceImpl implements TxnService {
     private BlockService chainService;
 
     private AionBlockchainAccessor accessor;
+
+    @Value("${txn.max-blocks-to-scan:500}")
+    private int maxBlocksToScan;
 
     public TxnServiceImpl(BlockService blockService, AionBlockchainAccessor accessor) {
         this.chainService = blockService;
@@ -51,6 +55,8 @@ public class TxnServiceImpl implements TxnService {
 
         }
 
+        int blockCounter = 0;
+
         while (transactions.size() < first && before >= 0) {
             Block blockDetails = chainService.getBlock(before);
 
@@ -63,6 +69,17 @@ public class TxnServiceImpl implements TxnService {
             }
 
             before--;
+            blockCounter++;
+
+            if(blockCounter > maxBlocksToScan) {
+                logger.warn("Maxium blocks scanned : {}. Let's return.", blockCounter);
+
+                if(transactions.size() == 0) {
+                    throw new BlockChainAcessException("No transactions found in scanned " + maxBlocksToScan + " blocks.");
+                } else {
+                    break;
+                }
+            }
         }
 
         return transactions;

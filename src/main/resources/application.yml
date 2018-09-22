@@ -10,3 +10,5 @@ graphql:
       websocket:
         path: /subscriptions
 
+txn:
+  max-blocks-to-scan: 2000

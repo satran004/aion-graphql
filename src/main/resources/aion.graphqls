@@ -487,6 +487,7 @@ type Block {
     size: Int
     txDetails: [TxDetails]
     blockTime: Long
+    timestamp: Long
 }
 
 type TxDetails {

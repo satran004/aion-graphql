@@ -22,6 +22,7 @@ public class Block {
     private int size;
     private List<TxDetails> txDetails;
     private Long blockTime;
+    private Long timestamp;
 
 
     public Long getNumber() {
@@ -158,5 +159,13 @@ public class Block {
 
     public void setBlockTime(Long blockTime) {
         this.blockTime = blockTime;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }

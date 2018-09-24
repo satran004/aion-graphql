@@ -23,7 +23,7 @@ public class ContractTest {
 
     private static Logger logger = LoggerFactory.getLogger(ContractTest.class);
 
-    private static String url = "tcp://localhost:8548";
+    private static String url = "tcp://192.168.0.96:8548";
 
     public static void testCompile(IAionAPI api, ApiMsg apiMsg) {
 

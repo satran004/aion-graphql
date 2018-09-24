@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -240,12 +241,15 @@ public class AdminServiceImpl implements AdminService {
                 logger.error("Error getting block details" + apiMsg.getErrString());
             }
 
-            List<BlockDetails> block = (List<BlockDetails>) apiMsg.getObject();
+            List<BlockDetails> blocks = (List<BlockDetails>) apiMsg.getObject();
 
             if (logger.isDebugEnabled())
-                logger.debug("Result: " + block.toString());
+                logger.debug("Result: " + blocks.toString());
 
-            return block.stream()
+            if(blocks != null)
+                Collections.reverse(blocks);
+
+            return blocks.stream()
                     .map(blockDetails -> ModelConverter.convert(blockDetails))
                     .collect(Collectors.toList());
 

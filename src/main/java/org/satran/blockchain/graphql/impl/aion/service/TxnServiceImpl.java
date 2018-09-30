@@ -82,6 +82,13 @@ public class TxnServiceImpl implements TxnService {
             }
         }
 
+        if(transactions.size() > first) {
+
+            int noOfElmToRemove = (int) (transactions.size() - first);
+
+            transactions.subList(transactions.size() - noOfElmToRemove, transactions.size()).clear();
+        }
+
         return transactions;
 
     }

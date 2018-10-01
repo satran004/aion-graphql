@@ -1,7 +1,8 @@
 <H1>GraphQL interface for Aion Blockchain</H1> 
 <a href="https://travis-ci.org/satran004/aion-graphql"><img src="https://travis-ci.org/satran004/aion-graphql.svg?branch=master"/></a>
 
-Demo: https://api.aion-graphql.com/playground.html
+Aion GraphQL Playground: https://api.aion-graphql.com/playground.html
+Aion Mainnet GraphQL Endpoint: https://api.aion-graphql.com/graphql
 
 API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL API </a>
 

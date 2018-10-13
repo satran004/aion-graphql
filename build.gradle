@@ -56,6 +56,8 @@ dependencies {
 
 mainClassName = 'org.satran.blockchain.graphql.ChainGraphQLApplication'
 
+applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dlogback.configurationFile=config/logback.xml"]
+
 jar {
     enabled = true
 }
@@ -68,13 +70,15 @@ distZip {
 
 distributions {
     main {
-        baseName = 'aion-graphql'
+        baseName = 'aion-graphql-dist'
 
         contents {
 
             from('native') {
                 into('native')
             }
+
+            from('LICENSE')
 
             from('src/main/resources') {
                 into('config')
@@ -101,4 +105,5 @@ release {
         signTag = false
     }
 }
+
 

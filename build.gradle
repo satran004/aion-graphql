@@ -15,8 +15,11 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+apply plugin: 'application'
+
+
 group = 'org.satran.aion'
-version = '0.0.1-SNAPSHOT'
+version = '0.3.0-SNAPSHOT'
 
 description = "aion-graphql"
 
@@ -32,12 +35,6 @@ repositories {
 }
 
 dependencies {
-//    compile('org.springframework.boot:spring-boot-starter-aop')
-//    compile('org.springframework.boot:spring-boot-starter-web')
-//    compile('org.springframework.boot:spring-boot-devtools')
-//
-//    compile('com.graphql-java:graphql-java-tools:4.3.0')
-
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
@@ -53,13 +50,36 @@ dependencies {
 
     compile fileTree(include: ['*.jar'], dir: 'lib')
     compile fileTree(include: ['*.jar'], dir: 'lib/lib')
-
-//    system group: 'org.aion', name: 'libAion', version:'0.11'
-//    system group: 'commons-collections', name: 'common-collections', version:'1.0'
-//    system group: 'gson', name: 'gson', version:'1.0'
-//    system group: 'libnsc', name: 'libnsc', version:'1.0'
-//    system group: 'libnzmq', name: 'libnzmq', version:'1.0'
-//    system group: 'ch.qos.logback', name: 'logback-classic1', version:'1.0'
-//    system group: 'ch.qos.logback', name: 'logback-core', version:'1.0'
-//    system group: 'protobuf', name: 'protobuf', version:'1.0'
 }
+
+mainClassName = 'org.satran.blockchain.graphql.ChainGraphQLApplication'
+
+jar {
+    enabled = true
+}
+
+[bootJar, bootDistTar, bootDistZip]*.enabled = false
+
+distZip {
+    eachFile { it.duplicatesStrategy = 'exclude'};
+}
+
+distributions {
+    main {
+        baseName = 'aion-graphql'
+
+        contents {
+
+            from('native') {
+                into('native')
+            }
+
+            from('src/main/resources') {
+                into('config')
+                include 'application.yml'
+                include 'logback.xml'
+            }
+        }
+    }
+}
+

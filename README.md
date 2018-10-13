@@ -52,7 +52,7 @@ Edit config/application.yml to provide aion kernel rpc host and port
 
 **Start GraphQL server**
 
-From ****aion-graphql-dist-\[version\] folder,  execute the following command to start the server.
+From aion-graphql-dist-\[version\] folder,  execute the following command to start the server.
 
 `$> bin/aion-graphql`
 
@@ -64,9 +64,9 @@ _on Windows :_
 
 ### **2. Build from Source**
 
-**`git clone https://github.com/satran004/aion-graphql.git`**
+`git clone https://github.com/satran004/aion-graphql.git`
 
-**`$> ./gradlew clean build`**
+`$> ./gradlew clean build`
 
 _**To run**_ 
 

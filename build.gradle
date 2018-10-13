@@ -21,9 +21,7 @@ apply plugin: 'io.spring.dependency-management'
 
 apply plugin: 'application'
 
-
-group = 'org.satran.aion'
-version = '0.3.0-SNAPSHOT'
+group = 'org.satran.blockchain'
 
 description = "aion-graphql"
 
@@ -90,7 +88,6 @@ distributions {
 release {
     failOnUnversionedFiles = false
     failOnUpdateNeeded = false
-    failOnCommitNeeded = false
 
     scmAdapters = [
             net.researchgate.release.GitAdapter,

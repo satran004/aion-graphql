@@ -59,7 +59,7 @@ dependencies {
 
 mainClassName = 'org.satran.blockchain.graphql.ChainGraphQLApplication'
 
-applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dlogback.configurationFile=config/logback.xml"]
+applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dlogging.config=config/logback.xml"]
 
 jar {
     enabled = true
@@ -127,11 +127,6 @@ configurations {
 
 }
 
-//idea {
-//    module {
-//        scopes.TEST.plus += [ configurations.integrationTestCompile ]
-//    }
-//}
 idea {
     module {
         testSourceDirs += sourceSets.integrationTest.java.srcDirs

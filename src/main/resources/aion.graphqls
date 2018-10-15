@@ -128,13 +128,13 @@ type TxnQuery {
 
 type AccountQuery {
 
-    #Get account object with attributes like "balance" for a given publicKey/address at the specified blockNumber.
+    #Get account object with attributes like "balance" for a given address at the specified blockNumber.
     #If blockNumber=-1 or missing, returns the account object at th latest block.
     #
     #Argument:
-    #publicKey - PublicKey of the account,
+    #address - Address of the account,
     #blockNumber - Block number
-    account(publicKey: String!, blockNumber: Long = -1) : Account
+    account(address: String!, blockNumber: Long = -1) : Account
 }
 
 type AdminQuery {
@@ -505,16 +505,18 @@ type TxDetails {
     error: String
     blockNumber: Long
     blockHash: String
+    fromAccount: Account
+    toAccount: Account
 }
 
 type Account {
-    publicKey: String
+    address: String
     balance: BigInteger
     #transactions: [TxDetails]
 }
 
 type AccountKey {
-    publicKey: String
+    address: String
     privateKey: String
     passphrase: String
 }
@@ -525,7 +527,7 @@ type AccountKeyExport {
 }
 
 input AccountKeyExportInput {
-    publicKey: String
+    address: String
     passphrase: String
 }
 

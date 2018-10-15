@@ -2,24 +2,24 @@ package org.satran.blockchain.graphql.model.input;
 
 public class AccountKeyExportInput {
 
-    private String publicKey;
+    private String address;
     private String passphrase;
 
     public AccountKeyExportInput() {
 
     }
 
-    public AccountKeyExportInput(String publicKey, String passphrase) {
-        this.publicKey = publicKey;
+    public AccountKeyExportInput(String address, String passphrase) {
+        this.address = address;
         this.passphrase = passphrase;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPassphrase() {

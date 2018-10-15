@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         List<Key> aionKeys = keys.stream()
-                .map(k -> new Key(Address.wrap(k.getPublicKey()), k.getPassphrase()))
+                .map(k -> new Key(Address.wrap(k.getAddress()), k.getPassphrase()))
                 .collect(Collectors.toList());
 
         return accessor.call(((apiMsg, api) -> {
@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         List<Key> aionKeys = keys.stream()
-                .map(k -> new Key(Address.wrap(k.getPublicKey()), k.getPassphrase()))
+                .map(k -> new Key(Address.wrap(k.getAddress()), k.getPassphrase()))
                 .collect(Collectors.toList());
 
         return accessor.call(((apiMsg, api) -> {
@@ -190,13 +190,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccount(String publicKey, List<String> fields, long blockNumber) {
+    public Account getAccount(String address, List<String> fields, long blockNumber) {
 
         Account account = new Account();
-        account.setPublicKey(publicKey);
+        account.setAddress(address);
 
         if (fields.contains("balance"))
-            account.setBalance(getBalance(publicKey, blockNumber));
+            account.setBalance(getBalance(address, blockNumber));
 
         return account;
 
@@ -204,7 +204,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public BigInteger getBalance(String publicKey, long blockNumber) {
-        return chainService.getBalance(publicKey, blockNumber);
+    public BigInteger getBalance(String address, long blockNumber) {
+        return chainService.getBalance(address, blockNumber);
     }
 }

@@ -3,12 +3,12 @@ package org.satran.blockchain.graphql.model;
 public class AccountKey {
 
     private String passphrase;
-    private String publicKey;
+    private String address;
     private String privateKey;
 
-    public AccountKey(String passphrase, String publicKey, String privateKey) {
+    public AccountKey(String passphrase, String address, String privateKey) {
         this.passphrase = passphrase;
-        this.publicKey = publicKey;
+        this.address = address;
         this.privateKey = privateKey;
     }
 
@@ -20,12 +20,12 @@ public class AccountKey {
         this.passphrase = passphrase;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPrivateKey() {

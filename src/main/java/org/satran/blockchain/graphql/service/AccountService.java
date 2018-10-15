@@ -19,8 +19,8 @@ public interface AccountService {
     public boolean accountImport(String privateKey, String passphrase);
 
     //Get services
-    public Account getAccount(String publicKey, List<String> fields, long blockNumber);
+    public Account getAccount(String address, List<String> fields, long blockNumber);
 
-    public BigInteger getBalance(String publicKey, long blockNumber);
+    public BigInteger getBalance(String address, long blockNumber);
 
 }

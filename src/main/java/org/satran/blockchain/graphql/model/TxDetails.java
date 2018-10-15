@@ -1,6 +1,7 @@
 package org.satran.blockchain.graphql.model;
 
 import java.math.BigInteger;
+import org.satran.blockchain.graphql.resolvers.AccountResolver;
 
 public class TxDetails {
 
@@ -19,6 +20,9 @@ public class TxDetails {
 
     private long blockNumber;
     private String blockHash;
+
+    private Account fromAccount;
+    private Account toAccount;
 
     public String getFrom() {
         return from;
@@ -130,5 +134,27 @@ public class TxDetails {
 
     public void setBlockHash(String blockHash) {
         this.blockHash = blockHash;
+    }
+
+    public Account getFromAccount() {
+        if(fromAccount == null)
+            fromAccount = AccountResolver.getInstance().account(from, -1);
+
+        return fromAccount;
+    }
+
+    public void setFromAccount(Account fromAccount) {
+        this.fromAccount = fromAccount;
+    }
+
+    public Account getToAccount() {
+        if(toAccount == null)
+            toAccount = AccountResolver.getInstance().account(to, -1);
+
+        return toAccount;
+    }
+
+    public void setToAccount(Account toAccount) {
+        this.toAccount = toAccount;
     }
 }

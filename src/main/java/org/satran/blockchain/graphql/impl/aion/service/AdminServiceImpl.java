@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
                     .map(ad -> {
                         Account acc = new Account();
                         acc.setBalance(ad.getBalance());
-                        acc.setPublicKey(ad.getAddress().toString());
+                        acc.setAddress(ad.getAddress().toString());
 
                         return acc;
                     }).collect(Collectors.toList());
@@ -84,7 +84,7 @@ public class AdminServiceImpl implements AdminService {
                     .map(ad -> {
                         Account acc = new Account();
                         acc.setBalance(ad.getBalance());
-                        acc.setPublicKey(ad.getAddress().toString());
+                        acc.setAddress(ad.getAddress().toString());
 
                         return acc;
                     }).collect(Collectors.toList());

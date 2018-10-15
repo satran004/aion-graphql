@@ -5,18 +5,18 @@ import java.util.List;
 
 public class Account {
 
-    private String publicKey;
+    private String address;
 
     private BigInteger balance;
 
     private List<TxDetails> transactions;
 
-    public String getPublicKey() {
-        return publicKey;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public BigInteger getBalance() {

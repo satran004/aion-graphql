@@ -1,14 +1,17 @@
 package org.satran.blockchain.graphql.service;
 
 import java.util.List;
+import org.satran.blockchain.graphql.model.Account;
 
 public interface WalletService {
 
-    public List<String> getAccounts();
+    public List<String> getAddresses();
 
-    public String getDefaultAccount();
+    public List<Account> getAccounts();
 
-    public String getMinerAccount();
+    public Account getDefaultAccount();
+
+    public Account getMinerAccount();
 
     public boolean lockAccount(String pubAddress, String passphrase);
 

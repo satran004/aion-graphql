@@ -286,14 +286,17 @@ type NetQuery {
 }
 
 type WalletQuery {
-    #Retrieves a list of accounts currently available on the local node.
-    accounts: [String]
+    #Retrieves a list of account addresses currently available on the local node.
+    addresses: [String]
+
+    #Retrieves a list of account currently available on the local node.
+    accounts: [Account]
 
     #Returns the default account of the user latest set.
-    defaultAccount: String
+    defaultAccount: Account
 
     #Returns the default miner account of the backend. miner account refers to the address utilized when isMining.
-    minerAccount: String
+    minerAccount: Account
 }
 
 type ContractQuery {

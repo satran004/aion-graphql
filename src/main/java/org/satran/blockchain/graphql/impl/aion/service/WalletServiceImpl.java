@@ -1,8 +1,10 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
+import java.util.Collections;
 import org.aion.base.type.Address;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.exception.BlockChainAcessException;
+import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.service.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +24,8 @@ public class WalletServiceImpl implements WalletService {
         this.accessor = accessor;
     }
 
-
     @Override
-    public List<String> getAccounts() {
+    public List<String> getAddresses() {
         if (logger.isDebugEnabled())
             logger.debug("Getting wallet accounts");
 
@@ -38,13 +39,25 @@ public class WalletServiceImpl implements WalletService {
             }
 
             return ((List<Address>)apiMsg.getObject()).stream()
-                    .map(address -> address.toString())
-                    .collect(Collectors.toList());
+                .map(address -> address.toString())
+                .collect(Collectors.toList());
         }));
     }
 
     @Override
-    public String getDefaultAccount() {
+    public List<Account> getAccounts() {
+        List<String> addresses = getAddresses();
+
+        if(addresses == null || addresses.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        return addresses.stream()
+            .map(address -> new Account(address))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public Account getDefaultAccount() {
         if (logger.isDebugEnabled())
             logger.debug("Getting default wallet account");
 
@@ -58,14 +71,14 @@ public class WalletServiceImpl implements WalletService {
             }
 
             if(apiMsg.getObject() == null)
-                return "";
+                return null;
             else
-                return apiMsg.getObject().toString();
+                return new Account(apiMsg.getObject().toString());
         }));
     }
 
     @Override
-    public String getMinerAccount() {
+    public Account getMinerAccount() {
         if (logger.isDebugEnabled())
             logger.debug("Getting default wallet account");
 
@@ -79,9 +92,9 @@ public class WalletServiceImpl implements WalletService {
             }
 
             if(apiMsg.getObject() == null)
-                return "";
+                return null;
             else
-                return apiMsg.getObject().toString(); //Address.toString
+                return new Account(apiMsg.getObject().toString()); //Address.toString
         }));
     }
 

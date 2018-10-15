@@ -22,7 +22,16 @@ public class WalletResolver {
     }
 
     //Wallet get apis
-    public List<String> accounts() {
+    public List<String> addresses() {
+        try {
+            return walletService.getAddresses();
+        } catch(Exception e) {
+            logger.error("Error getting wallet accounts");
+            throw new DataFetchingException(e.getMessage());
+        }
+    }
+
+    public List<Account> accounts() {
         try {
             return walletService.getAccounts();
         } catch(Exception e) {
@@ -31,7 +40,7 @@ public class WalletResolver {
         }
     }
 
-    public String defaultAccount() {
+    public Account defaultAccount() {
         try {
             return walletService.getDefaultAccount();
         } catch(Exception e) {
@@ -40,7 +49,7 @@ public class WalletResolver {
         }
     }
 
-    public String getMinerAccount() {
+    public Account getMinerAccount() {
         try {
             return walletService.getMinerAccount();
         } catch(Exception e) {

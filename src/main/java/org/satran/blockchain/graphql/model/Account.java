@@ -2,14 +2,21 @@ package org.satran.blockchain.graphql.model;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.satran.blockchain.graphql.resolvers.AccountResolver;
 
 public class Account {
 
     private String address;
-
     private BigInteger balance;
-
     private List<TxDetails> transactions;
+
+    public Account() {
+
+    }
+
+    public Account(String address) {
+        this.address = address;
+    }
 
     public String getAddress() {
         return address;
@@ -20,6 +27,14 @@ public class Account {
     }
 
     public BigInteger getBalance() {
+
+        if (balance == null && address != null && !address.isEmpty()) {
+            Account account = AccountResolver.getInstance().account(address, -1);
+            if (account != null) {
+                balance = account.getBalance();
+            }
+        }
+
         return balance;
     }
 

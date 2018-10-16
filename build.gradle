@@ -86,6 +86,10 @@ distributions {
             from('src/main/resources') {
                 into('config')
                 include 'application.yml'
+            }
+
+            from('config') {
+                into('config')
                 include 'logback.xml'
             }
         }

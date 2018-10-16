@@ -1,0 +1,27 @@
+#{"query": "{ txnApi {transactions(first: 3) {to from}} }"}
+transactions:
+  query: "{\"query\":
+              \"{
+                txnApi {
+                  transactions(first: 3) {
+                    to
+                    from
+                  }
+                }
+              }\"
+        }"
+
+rpc:
+  endpoint: "tcp://localhost:8547"
+
+graphql:
+  servlet:
+    mapping: /graphql
+    enabled: true
+    corsEnabled: true
+    subscriptions:
+      websocket:
+        path: /subscriptions
+
+txn:
+  max-blocks-to-scan: 2000

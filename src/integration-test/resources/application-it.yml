@@ -6,9 +6,32 @@ transactions:
                   transactions(first: 3) {
                     to
                     from
+                    value
+                    timestamp
                   }
                 }
               }\"
+        }"
+
+blocks:
+  query: "{\"query\":
+                \"{
+                 blockApi {
+                     blocks(first: 5, before: 1496491) {
+                       number
+                       hash
+                       parentHash
+                       nrgConsumed
+                       nrgLimit
+                       txDetails {
+                         to
+                         from
+                         value
+                         timestamp
+                       }
+                     }
+                 }
+            }\"
         }"
 
 rpc:

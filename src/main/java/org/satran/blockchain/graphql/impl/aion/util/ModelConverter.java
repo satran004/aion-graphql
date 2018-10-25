@@ -38,6 +38,8 @@ public class ModelConverter {
                         TxDetails txD = ModelConverter.convert(txDetails);
                         txD.setBlockHash(b.getHash());
                         txD.setBlockNumber(b.getNumber());
+                        if(txD.getTimestamp() == 0)
+                            txD.setTimestamp(b.getTimestamp());
 
                         return txD;
                     }).collect(Collectors.toList()));
@@ -92,6 +94,9 @@ public class ModelConverter {
 
         tx.setBlockNumber(aionTx.getBlockNumber());
         tx.setBlockHash(String.valueOf(aionTx.getBlockHash()));
+
+        //Set timestamp manually as field names are different in DTO and original object
+        tx.setTimestamp(aionTx.getTimeStamp());
 
         return  tx;
     }

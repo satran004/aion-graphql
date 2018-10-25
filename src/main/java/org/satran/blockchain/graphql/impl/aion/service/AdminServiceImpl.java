@@ -234,7 +234,7 @@ public class AdminServiceImpl implements AdminService {
             if (before == -1)
                 apiMsg.set(api.getAdmin().getBlockDetailsByLatest(first));
             else {
-                apiMsg.set(api.getAdmin().getBlockDetailsByRange(before - first, before));
+                apiMsg.set(api.getAdmin().getBlockDetailsByRange(before - first, before-1));
             }
 
             if (apiMsg.isError()) {

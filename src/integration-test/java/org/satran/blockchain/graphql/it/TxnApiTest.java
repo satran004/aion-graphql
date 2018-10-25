@@ -2,7 +2,9 @@ package org.satran.blockchain.graphql.it;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -12,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -44,12 +47,12 @@ public class TxnApiTest {
     HttpEntity<String> entity = new HttpEntity<String>(txnQuery, headers);
 
     ResponseEntity<String> response = restTemplate.exchange(
-        createURLWithPort(),
+        TestUtil.createURLWithPort(port),
         HttpMethod.POST, entity, String.class);
 
     System.out.printf(response.toString() );
 
-    JsonArray jsonArray = getJSONArray(response.getBody(), "txnApi", "transactions");
+    JsonArray jsonArray = TestUtil.getJSONArray(response.getBody(), "txnApi", "transactions");
 
     assertThat(jsonArray.size(), equalTo(3));
     assertThat(jsonArray.get(0).getAsJsonObject().get("to"), is(notNullValue()));
@@ -57,32 +60,12 @@ public class TxnApiTest {
 
     assertThat(jsonArray.get(0).getAsJsonObject().get("from"), is(notNullValue()));
     assertThat(jsonArray.get(0).getAsJsonObject().get("from").getAsString(), is(startsWith("a0")));
+
+    assertThat(jsonArray.get(0).getAsJsonObject().get("timestamp").getAsLong(), is(not(equalTo(0))));
   }
 
-  private String createURLWithPort() {
-    return "http://localhost:" + port  + "/graphql";
-  }
 
-  private JsonArray getJSONArray(String json, String api, String method) {
-    JsonParser jsonParser = new JsonParser();
-    JsonElement jsonElement = jsonParser.parse(json);
 
-    JsonArray jsonArray = jsonElement.getAsJsonObject().get("data").getAsJsonObject()
-        .get(api).getAsJsonObject()
-        .get(method).getAsJsonArray();
 
-    return jsonArray;
-  }
-
-  private JsonObject getJsonObject(String json, String api, String method) {
-    JsonParser jsonParser = new JsonParser();
-    JsonElement jsonElement = jsonParser.parse(json);
-
-    JsonObject jsonObject = jsonElement.getAsJsonObject().get("data").getAsJsonObject()
-        .get(api).getAsJsonObject()
-        .get(method).getAsJsonObject();
-
-    return jsonObject;
-  }
 }
 

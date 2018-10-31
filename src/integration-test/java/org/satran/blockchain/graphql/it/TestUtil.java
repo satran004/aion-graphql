@@ -34,4 +34,15 @@ public class TestUtil {
 
         return jsonObject;
     }
+
+    public static String getStringValue(String json, String api, String method) {
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonElement = jsonParser.parse(json);
+
+        String result = jsonElement.getAsJsonObject().get("data").getAsJsonObject()
+            .get(api).getAsJsonObject()
+            .get(method).getAsString();
+
+        return result;
+    }
 }

@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("it")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BlocksApiTest {
+public class BlocksApiTest extends AbstractTest {
 
     @LocalServerPort
     private int port;
@@ -34,18 +34,11 @@ public class BlocksApiTest {
     @Value("${blocks.query}")
     private String blocksQuery;
 
-    TestRestTemplate restTemplate = new TestRestTemplate();
-
     @Test
     public void getBlocksTest() throws Exception {
         System.out.println(blocksQuery);
 
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> entity = new HttpEntity<String>(blocksQuery, headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-            TestUtil.createURLWithPort(port),
-            HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = invokeApi(blocksQuery);
 
         System.out.printf(response.toString() );
 
@@ -65,5 +58,9 @@ public class BlocksApiTest {
         JsonObject txnObj = jsonArray.get(0).getAsJsonObject().getAsJsonArray("txDetails")
             .get(0).getAsJsonObject();
 
+    }
+
+    public int getPort() {
+        return port;
     }
 }

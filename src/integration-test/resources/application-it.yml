@@ -1,7 +1,6 @@
 #{"query": "{ txnApi {transactions(first: 3) {to from}} }"}
-transactions:
-  query: "{\"query\":
-              \"{
+txnApi:
+  transactions: "
                 txnApi {
                   transactions(first: 3) {
                     to
@@ -9,13 +8,36 @@ transactions:
                     value
                     timestamp
                   }
-                }
-              }\"
-        }"
+                }"
+
+
+  transaction: "
+                txnApi {
+                                    transaction(txHash: \"f5aef96668cdb2bc0171edae363c191d50addfa2ab7e88c430bb15c624d8fc1e\") {
+                                       to
+                                       from
+                                       value
+                                       blockHash
+                                       blockNumber
+                                       data
+                                       nonce
+                                    }
+                                }"
+
+  nrgPrice: "
+             txnApi {
+                   nrgPrice
+             }
+             "
+
+  solcVersion: "
+             txnApi {
+                 solcVersion
+               }
+            "
 
 blocks:
-  query: "{\"query\":
-                \"{
+  query: "
                  blockApi {
                      blocks(first: 5, before: 1496491) {
                        number
@@ -31,8 +53,7 @@ blocks:
                        }
                      }
                  }
-            }\"
-        }"
+           "
 
 rpc:
   endpoint: "tcp://localhost:8547"

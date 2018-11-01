@@ -2,6 +2,7 @@ package org.satran.blockchain.graphql.impl.aion.util;
 
 import org.aion.api.sol.IInt;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.Hex;
 import org.satran.blockchain.graphql.exception.DataConversionException;
 
 import java.math.BigInteger;
@@ -20,11 +21,15 @@ public class TypeUtil {
         return ByteArrayWrapper.wrap(bytes).toString();
     }
 
-    public static ByteArrayWrapper toByteArrayWrapper(String str) {
-        if(str == null)
+    public static ByteArrayWrapper toByteArrayWrapper(String hexStr) {
+        if(hexStr == null)
             return null;
-        else
-            return ByteArrayWrapper.wrap(str.getBytes());
+        else {
+            if(hexStr.startsWith("0x") || hexStr.startsWith("0X"))
+                hexStr = hexStr.substring(2);
+
+            return ByteArrayWrapper.wrap(Hex.decode(hexStr));
+        }
     }
 
     public static Boolean toBoolean(Object value) {

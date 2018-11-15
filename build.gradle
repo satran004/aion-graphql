@@ -43,10 +43,16 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 
     compile group: 'com.graphql-java', name: 'graphql-java-tools', version:'5.2.4'
     compile group: 'com.graphql-java', name: 'graphql-spring-boot-starter', version:'5.0.2'
     compile group: 'com.graphql-java', name: 'graphiql-spring-boot-starter', version:'4.0.0'
+
+    //rest
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
     compile group: 'org.apache.commons', name: 'commons-pool2', version:'2.2'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version:'1.9.3'

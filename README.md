@@ -12,7 +12,7 @@ API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL 
 This project provides **GraphQL** endpoint to query Aion blockchain.
 It is using AION java api to communicate with Aion blockchain.
 
-It also support **REST Api** endpoints. The REST api development is in progress. You can check supported REST apis here.
+It also support **REST Api** endpoints. The REST api development is still in progress. You can check supported REST apis here.
 
 https://api.aion-graphql.com/swagger-ui.html
 

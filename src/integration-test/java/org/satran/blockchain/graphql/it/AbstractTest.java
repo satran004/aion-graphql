@@ -19,7 +19,7 @@ public abstract class AbstractTest {
     HttpEntity<String> entity = new HttpEntity<String>(query, headers);
 
     return restTemplate.exchange(
-        TestUtil.createURLWithPort(getPort()),
+        TestUtil.createGraphQLURLWithPort(getPort()),
         HttpMethod.POST, entity, String.class);
   }
 

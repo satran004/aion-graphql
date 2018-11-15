@@ -23,4 +23,6 @@ public interface AccountService {
 
     public BigInteger getBalance(String address, long blockNumber);
 
+    public BigInteger getNonce(String address);
+
 }

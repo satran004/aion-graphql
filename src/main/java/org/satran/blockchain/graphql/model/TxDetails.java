@@ -1,5 +1,6 @@
 package org.satran.blockchain.graphql.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigInteger;
 import org.satran.blockchain.graphql.resolvers.AccountResolver;
 import org.springframework.hateoas.ResourceSupport;
@@ -22,7 +23,10 @@ public class TxDetails extends ResourceSupport {
     private long blockNumber;
     private String blockHash;
 
+    //Ignore only for rest. Graphql should not have any issue
+    @JsonIgnore
     private Account fromAccount;
+    @JsonIgnore
     private Account toAccount;
 
     public String getFrom() {

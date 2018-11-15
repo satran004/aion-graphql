@@ -1,13 +1,18 @@
 package org.satran.blockchain.graphql.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigInteger;
 import java.util.List;
 import org.satran.blockchain.graphql.resolvers.AccountResolver;
+import org.springframework.hateoas.ResourceSupport;
 
-public class Account {
+public class Account extends ResourceSupport {
 
     private String address;
     private BigInteger balance;
+    private BigInteger nonce;
+
+    @JsonIgnore
     private List<TxDetails> transactions;
 
     public Account() {
@@ -40,6 +45,14 @@ public class Account {
 
     public void setBalance(BigInteger balance) {
         this.balance = balance;
+    }
+
+    public BigInteger getNonce() {
+        return nonce;
+    }
+
+    public void setNonce(BigInteger nonce) {
+        this.nonce = nonce;
     }
 
     public List<TxDetails> getTransactions() {

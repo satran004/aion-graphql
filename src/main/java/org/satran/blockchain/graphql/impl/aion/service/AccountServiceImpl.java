@@ -198,6 +198,14 @@ public class AccountServiceImpl implements AccountService {
         if (fields.contains("balance"))
             account.setBalance(getBalance(address, blockNumber));
 
+        if(fields.contains("nonce")) {
+            try {
+                account.setNonce(getNonce(address));
+            } catch (Exception e) {
+                logger.error("Unable to get nonce for address : {}", address);
+            }
+        }
+
         return account;
 
     }
@@ -206,5 +214,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public BigInteger getBalance(String address, long blockNumber) {
         return chainService.getBalance(address, blockNumber);
+    }
+
+    @Override
+    public BigInteger getNonce(String address) {
+        return chainService.getNonce(address);
     }
 }

@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestUtil {
 
-    public static String createURLWithPort(int port) {
+    public static String createRestBaseUrlWithPort(int port) {
+        return "http://localhost:" + port + "/rest";
+    }
+
+    public static String createGraphQLURLWithPort(int port) {
         return "http://localhost:" + port  + "/graphql";
     }
 
@@ -44,5 +48,14 @@ public class TestUtil {
             .get(method).getAsString();
 
         return result;
+    }
+
+    public static JsonObject getJsonObject(String json) {
+        JsonParser jsonParser = new JsonParser();
+        JsonElement jsonElement = jsonParser.parse(json);
+
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        return jsonObject;
     }
 }

@@ -1,6 +1,8 @@
 package org.satran.blockchain.graphql.model;
 
-public class MsgRespBean {
+import org.springframework.hateoas.ResourceSupport;
+
+public class MsgRespBean extends ResourceSupport {
 
     private String status;
     private String msgHash;

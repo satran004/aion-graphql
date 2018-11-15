@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiParam;
 import java.util.Collections;
 import java.util.List;
 import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.TxDetails;
+import org.satran.blockchain.graphql.rest.exception.RestResourceNotFoundException;
 import org.satran.blockchain.graphql.service.BlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController()
+@RestController
 @RequestMapping(VERSION1_BASE_PATH + "blocks")
 @ConditionalOnProperty(name = "rest.enable", havingValue = "true")
 @Api(value="blocks", description="Block specific apis")
@@ -36,7 +38,7 @@ public class BlockController {
   @GetMapping(produces = "application/hal+json")
   @ApiOperation(value = "Get blocks starting from the block number passed through \"before\" parameter")
   public ResponseEntity<Resources<Block>> getBlocks(
-      @RequestParam(value = "first") @ApiParam(value = "No of blocks to return") Long first,
+      @RequestParam(value = "first", required = false, defaultValue = "20") @ApiParam(value = "No of blocks to return") Long first,
       @RequestParam(value = "before", required = false, defaultValue = "-1") @ApiParam(value = "Start block number") Long before) {
 
     List<Block> blocks = service.getBlocks(first, before);
@@ -46,6 +48,10 @@ public class BlockController {
 
     for(Block block: blocks) {
       block.add(linkTo(methodOn(BlockController.class).getBlock(block.getNumber())).withSelfRel());
+
+      block.getTxDetails().stream().forEach(txDetails -> {
+        addTxnDetailsLink(txDetails);
+      });
     }
 
     final Resources<Block> blockResources = new Resources<>(blocks);
@@ -65,10 +71,27 @@ public class BlockController {
 
     if(block != null) {
       block.add(linkTo(methodOn(BlockController.class).getBlock(number)).withSelfRel());
+
+      block.getTxDetails().stream().forEach(txDetails -> {
+        addTxnDetailsLink(txDetails);
+      });
+
       return new ResponseEntity<>(block, HttpStatus.OK);
     } else {
-      return new ResponseEntity<>(block, HttpStatus.NOT_FOUND);
+      throw new RestResourceNotFoundException("Block not found");
     }
+  }
+
+  private void addTxnDetailsLink(TxDetails txDetails) {
+    txDetails.add(linkTo(methodOn(TransactionController.class).transaction(txDetails.getTxHash())).withSelfRel());
+
+    txDetails.add(
+        linkTo(methodOn(AccountController.class).getAccount(txDetails.getFrom()))
+            .withRel("from"));
+
+    txDetails.add(
+        linkTo(methodOn(AccountController.class).getAccount(txDetails.getTo()))
+            .withRel("to"));
   }
 
 }

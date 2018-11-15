@@ -73,7 +73,8 @@ _on Windows :_
 
 _**To run**_ 
 
-`$> rpc_endpoint=tcp://[kernel-host]:8547 ./gradlew bootRun`
+`$> export rpc_endpoint=tcp://[kernel-host]:8547`
+`$> ./gradlew bootRun`
 
 If you want to test GraphQL API on the browser, try the following url
 

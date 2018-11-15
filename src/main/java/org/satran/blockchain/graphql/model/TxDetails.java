@@ -2,8 +2,9 @@ package org.satran.blockchain.graphql.model;
 
 import java.math.BigInteger;
 import org.satran.blockchain.graphql.resolvers.AccountResolver;
+import org.springframework.hateoas.ResourceSupport;
 
-public class TxDetails {
+public class TxDetails extends ResourceSupport {
 
     private String from;
     private String to;

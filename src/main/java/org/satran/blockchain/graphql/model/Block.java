@@ -2,8 +2,9 @@ package org.satran.blockchain.graphql.model;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.springframework.hateoas.ResourceSupport;
 
-public class Block {
+public class Block extends ResourceSupport {
 
     private Long number;
     private Long nrgConsumed;

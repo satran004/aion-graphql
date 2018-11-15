@@ -9,9 +9,12 @@ Aion Mainnet GraphQL Endpoint: https://api.aion-graphql.com/graphql  (To be used
 
 API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL API </a>
 
-This project provides GraphQL REST endpoint to query Aion blockchain.
+This project provides **GraphQL** endpoint to query Aion blockchain.
 It is using AION java api to communicate with Aion blockchain.
 
+It also support **REST Api** endpoints. The REST api development is in progress. You can check supported REST apis here.
+
+https://api.aion-graphql.com/swagger-ui.html
 
 <b>Tested on:</b>
 - Ubuntu 16.04 LTS, MacOS

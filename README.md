@@ -67,13 +67,14 @@ _on Windows :_
 
 ### **2. Build from Source**
 
-`git clone https://github.com/satran004/aion-graphql.git`
+`$> git clone https://github.com/satran004/aion-graphql.git`
 
 `$> ./gradlew clean build -x integrationTest`
 
 _**To run**_ 
 
 `$> export rpc_endpoint=tcp://[kernel-host]:8547`
+
 `$> ./gradlew bootRun`
 
 If you want to test GraphQL API on the browser, try the following url

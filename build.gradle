@@ -56,7 +56,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.2-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-spring', version: '1.2-groovy-2.4'
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.7'
 }
 
@@ -146,6 +147,10 @@ idea {
         testSourceDirs += sourceSets.integrationTest.groovy.srcDirs
         testResourceDirs += sourceSets.integrationTest.resources.srcDirs
         scopes.TEST.plus += [ configurations.integrationTestCompile ]
+
+        //added TODO
+//        inheritOutputDirs = false
+//        outputDir = file("$buildDir/classes/main/")
     }
 }
 

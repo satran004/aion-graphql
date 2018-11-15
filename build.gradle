@@ -20,6 +20,8 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+apply plugin: 'groovy'
+
 apply plugin: 'application'
 
 group = 'org.satran.blockchain'
@@ -54,6 +56,9 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
 
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.2-groovy-2.4'
+    testCompile group: 'org.spockframework', name: 'spock-spring', version: '1.2-groovy-2.4'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.7'
 }
 
 mainClassName = 'org.satran.blockchain.graphql.ChainGraphQLApplication'
@@ -120,6 +125,12 @@ sourceSets {
             runtimeClasspath += main.output + test.output
             srcDir file('src/integration-test/java')
         }
+
+        groovy {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/groovy')
+        }
         resources.srcDir file('src/integration-test/resources')
     }
 }
@@ -133,8 +144,13 @@ configurations {
 idea {
     module {
         testSourceDirs += sourceSets.integrationTest.java.srcDirs
+        testSourceDirs += sourceSets.integrationTest.groovy.srcDirs
         testResourceDirs += sourceSets.integrationTest.resources.srcDirs
         scopes.TEST.plus += [ configurations.integrationTestCompile ]
+
+        //added TODO
+//        inheritOutputDirs = false
+//        outputDir = file("$buildDir/classes/main/")
     }
 }
 

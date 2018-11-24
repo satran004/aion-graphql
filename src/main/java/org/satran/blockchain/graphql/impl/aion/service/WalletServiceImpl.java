@@ -8,6 +8,7 @@ import org.satran.blockchain.graphql.model.Account;
 import org.satran.blockchain.graphql.service.WalletService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public class WalletServiceImpl implements WalletService {
     private static final Logger logger = LoggerFactory.getLogger(WalletServiceImpl.class);
 
     private AionBlockchainAccessor accessor;
+
+    @Value("${aion.graphql.disable-sensitive-operations:false}")
+    private boolean disableSensitiveOperations;
 
     public WalletServiceImpl(AionBlockchainAccessor accessor) {
         this.accessor = accessor;
@@ -121,6 +125,9 @@ public class WalletServiceImpl implements WalletService {
     public boolean unlockAccount(String pubAddress, String passphrase, int duration) {
         if(logger.isDebugEnabled())
             logger.debug("Trying to unlock the account");
+
+        if(disableSensitiveOperations)
+            throw new BlockChainAcessException("This operation is disabled in this deployment due to security reason.");
 
         return accessor.call(((apiMsg, api) -> {
 

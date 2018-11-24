@@ -13,6 +13,7 @@ import org.satran.blockchain.graphql.service.AccountService;
 import org.satran.blockchain.graphql.service.ChainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -31,6 +32,9 @@ public class AccountServiceImpl implements AccountService {
 
     private ChainService chainService;
 
+    @Value("${aion.graphql.disable-sensitive-operations:false}")
+    private boolean disableSensitiveOperations;
+
     private AccountServiceImpl(AionBlockchainAccessor accessor, ChainService chainService) {
         this.accessor = accessor;
         this.chainService = chainService;
@@ -40,6 +44,9 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountKey> accountCreate(List<String> passphrase, boolean privateKey) {
         if (logger.isDebugEnabled())
             logger.debug("Creating new account");
+
+        if(disableSensitiveOperations)
+            throw new BlockChainAcessException("This operation is disabled in this deployment due to security reason.");
 
         if (passphrase == null || passphrase.size() == 0)
             return Collections.EMPTY_LIST;

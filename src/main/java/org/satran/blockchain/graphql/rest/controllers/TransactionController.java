@@ -59,20 +59,40 @@ public class TransactionController {
 
     }
 
-    @GetMapping(value = "/{txnHash}", produces = "application/json")
+    @GetMapping(value = "/{txHash}", produces = "application/json")
     @ApiOperation(value = "Get transaction details for the given transaction hash")
     public ResponseEntity<TxDetails> transaction(
-        @PathVariable("txnHash") @ApiParam("Transaction hash") String txnHash) {
+        @PathVariable("txHash") @ApiParam("Transaction hash") String txHash) {
 
-        TxDetails txDetails = txnService.getTransaction(txnHash);
+        TxDetails txDetails = txnService.getTransaction(txHash);
 
-        if (txnHash != null) {
-            addTxnDetailsLinks(txnHash, txDetails);
+        if (txHash != null) {
+            addTxnDetailsLinks(txHash, txDetails);
 
             return ResponseEntity.ok(txDetails);
         } else {
             throw new RestResourceNotFoundException("Transaction not found");
         }
+    }
+
+    @GetMapping(value = "/search", produces = "application/json")
+    @ApiOperation(value = "Get transactions details for list of transaction hash")
+    public ResponseEntity<Resources<TxDetails>> transactionsByHash(
+        @RequestParam("txHash") @ApiParam("Transaction hash") List<String> txHash) {
+
+        List<TxDetails> txDetailsList = txnService.getTransactionsByHash(txHash);
+
+        if (txDetailsList == null) {
+            return ResponseEntity.ok(null);
+        }
+
+        for (TxDetails txDetails : txDetailsList) {
+            addTxnDetailsLinks(txDetails.getTxHash(), txDetails);
+        }
+
+        final Resources<TxDetails> txDetailsResources = new Resources<>(txDetailsList);
+
+        return ResponseEntity.ok(txDetailsResources);
     }
 
     @PostMapping(consumes = "text/plain", produces = "application/json")
@@ -105,6 +125,11 @@ public class TransactionController {
         txDetails.add(
             linkTo(methodOn(AccountController.class).getAccount(txDetails.getTo()))
                 .withRel("to"));
+
+        txDetails.add(
+            linkTo(methodOn(BlockController.class).getBlock(txDetails.getBlockNumber()))
+                .withRel("block")
+        );
     }
 
 }

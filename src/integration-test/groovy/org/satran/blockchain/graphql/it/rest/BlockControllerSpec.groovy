@@ -26,7 +26,7 @@ class BlockControllerSpec extends Specification {
     TestRestTemplate restTemplate = new TestRestTemplate();
 
     def setupSpec() {
-        System.setProperty("rpc.endpoint", "tcp://<host>:8547")
+        //System.setProperty("rpc.endpoint", "tcp://<host>:8547")
     }
 
     def "get blocks should return blocks and transactions"() {

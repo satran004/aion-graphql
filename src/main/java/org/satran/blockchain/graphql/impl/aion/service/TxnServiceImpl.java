@@ -123,6 +123,38 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
+    public List<TxDetails> getTransactionsByHash(List<String> txHashes) {
+        if (logger.isDebugEnabled())
+            logger.debug("Getting transactions by hashes");
+
+        if(txHashes == null)
+            return Collections.EMPTY_LIST;
+
+        List<TxDetails> txDetails = new ArrayList<>();
+        return accessor.call(((apiMsg, api) -> {
+
+            for(String txHash: txHashes) {
+                apiMsg.set(api.getChain().getTransactionByHash(Hash256.wrap(txHash)));
+                if (apiMsg.isError()) {
+                    logger.error("Unable to get the transaction {}", apiMsg.getErrString());
+                    continue; //Just continue incase of error. Error will be handled in client side.
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Transaction details" + apiMsg.getObject());
+
+                Transaction transaction = apiMsg.getObject();
+                TxDetails txDetail = ModelConverter.convert(transaction);
+
+                txDetails.add(txDetail);
+            }
+
+            return txDetails;
+        }));
+
+    }
+
+    @Override
     public String call(TxArgsInput args) { //TODO test
         if (logger.isDebugEnabled())
             logger.debug("Invoking call {} ", args);

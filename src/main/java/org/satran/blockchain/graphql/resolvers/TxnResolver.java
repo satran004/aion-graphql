@@ -41,6 +41,15 @@ public class TxnResolver {
         }
     }
 
+    public List<TxDetails> transactionsByHash(List<String> txHash) {
+        try {
+            return txnService.getTransactionsByHash(txHash);
+        } catch (Exception e) {
+            logger.error("Error getting transactions", e);
+            throw new DataFetchingException(e.getMessage());
+        }
+    }
+
     public long estimateNrg(String code) {
         return txnService.estimateNrg(code);
     }

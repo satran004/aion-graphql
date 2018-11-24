@@ -50,5 +50,7 @@ public interface TxnService {
 
     public TxDetails getTransaction(String txHash);
 
+    public List<TxDetails> getTransactionsByHash(List<String> txHash);
+
 
 }

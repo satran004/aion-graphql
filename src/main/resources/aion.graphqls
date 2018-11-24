@@ -85,6 +85,12 @@ type TxnQuery {
     #first - number of transactions to fetch
     transactions(before: Long = -1, first: Long!): [TxDetails]
 
+
+    #Get Transactions for the given hashes
+    #Arguments
+    #txHash: List of Transaction Hash
+    transactionsByHash(txHash: [String]!): [TxDetails]
+
     #Estimates the Nrg required to execute transaction.
     #
     #Arguments:

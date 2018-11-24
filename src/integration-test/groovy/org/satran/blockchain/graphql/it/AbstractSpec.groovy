@@ -15,7 +15,7 @@ abstract class AbstractSpec extends Specification {
     protected ResponseEntity<String> invokeApi(String query) {
 
         query = "{\"query\": \"{" + query + "}\"}";
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON)
         HttpEntity<String> entity = new HttpEntity<String>(query, headers);

@@ -21,3 +21,5 @@ aion:
 
 spring.jackson.serialization.indent-output: true
 
+#Actuator settings
+management.endpoints.web.exposure.include: health,metrics, info

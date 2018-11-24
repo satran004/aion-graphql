@@ -13,8 +13,11 @@ graphql:
 rest:
   enable: true
 
-txn:
-  max-blocks-to-scan: 2000
+aion:
+  graphql:
+    disable-sensitive-operations: false
+    txn:
+      max-blocks-to-scan: 2000
 
 spring.jackson.serialization.indent-output: true
 

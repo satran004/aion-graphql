@@ -30,7 +30,7 @@ public class TxnServiceImpl implements TxnService {
 
     private AionBlockchainAccessor accessor;
 
-    @Value("${txn.max-blocks-to-scan:500}")
+    @Value("${aion.graphql.txn.max-blocks-to-scan:500}")
     private int maxBlocksToScan;
 
     public TxnServiceImpl(BlockService blockService, AionBlockchainAccessor accessor) {

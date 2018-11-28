@@ -23,6 +23,10 @@ public abstract class AbstractTest {
         HttpMethod.POST, entity, String.class);
   }
 
+  public boolean isIgnore() {
+    return "false".equals(System.getenv("test_query"));
+  }
+
   public abstract int getPort();
 
 }

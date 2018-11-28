@@ -49,6 +49,10 @@ public class TxnApiTest extends AbstractTest {
 
   @Test
   public void getTransactionsTest() throws Exception {
+
+    if(isIgnore())
+      return;
+
     System.out.println(txnsQuery);
 
     ResponseEntity<String> response = invokeApi(txnsQuery);
@@ -70,6 +74,9 @@ public class TxnApiTest extends AbstractTest {
   @Test
   @Ignore
   public void getTransactionTest() throws Exception {
+    if(isIgnore())
+      return;
+
     System.out.println(txnQuery);
     ResponseEntity<String> response = invokeApi(txnQuery);
 
@@ -87,6 +94,9 @@ public class TxnApiTest extends AbstractTest {
 
   @Test
   public void getNrgPriceTest() throws Exception {
+    if(isIgnore())
+      return;
+
     ResponseEntity<String> response = invokeApi(nrgPriceQuery);
 
     System.out.printf(response.toString() );
@@ -99,6 +109,9 @@ public class TxnApiTest extends AbstractTest {
 
   @Test
   public void getSolcVersionTest() throws Exception {
+    if(isIgnore())
+      return;
+
     ResponseEntity<String> response = invokeApi(solcVersionQuery);
 
     System.out.printf(response.toString() );

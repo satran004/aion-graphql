@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("it")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Ignore()
 public class BlocksApiTest extends AbstractTest {
 
     @LocalServerPort
@@ -36,6 +38,10 @@ public class BlocksApiTest extends AbstractTest {
 
     @Test
     public void getBlocksTest() throws Exception {
+
+        if(isIgnore())
+            return;
+
         System.out.println(blocksQuery);
 
         ResponseEntity<String> response = invokeApi(blocksQuery);

@@ -11,12 +11,14 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles("it")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@IgnoreIf({ env.test_query == 'false' })
 class BlockControllerSpec extends Specification {
 
     @LocalServerPort

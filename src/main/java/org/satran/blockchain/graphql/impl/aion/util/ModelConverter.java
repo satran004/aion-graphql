@@ -140,6 +140,12 @@ public class ModelConverter {
 
         BeanUtils.copyProperties(deployResponse, drb);
 
+        if(deployResponse.getAddress() != null)
+            drb.setAddress(deployResponse.getAddress().toString());
+
+        if(deployResponse.getTxid() != null)
+            drb.setTxId(deployResponse.getTxid().toString());
+
         return drb;
     }
 

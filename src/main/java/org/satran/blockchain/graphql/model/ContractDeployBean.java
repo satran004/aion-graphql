@@ -11,7 +11,7 @@ public class ContractDeployBean {
     private long nrgLimit;
     private long nrgPrice;
     private BigInteger value;
-    private boolean isConstructor;
+    private boolean constructor;
 
 //    public CompileResponseBean getCompileResponse() {
 //        return compileResponse;
@@ -71,11 +71,10 @@ public class ContractDeployBean {
     }
 
     public boolean isConstructor() {
-        return isConstructor;
+        return constructor;
     }
 
     public void setConstructor(boolean constructor) {
-        isConstructor = constructor;
+        this.constructor = constructor;
     }
-
 }

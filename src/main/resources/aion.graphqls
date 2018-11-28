@@ -640,7 +640,7 @@ input ContractAbiIOParamInput {
 #Txn input
 input TxArgsInput {
     from: String!
-    to: String!
+    to: String
     value: BigInteger
     data: String
     nonce: BigInteger
@@ -665,7 +665,7 @@ input ContractDeployInput {
     nrgLimit: Long
     nrgPrice: Long
     value: BigInteger
-    isConstructor: Boolean
+    constructor: Boolean
 }
 
 input ContractEventFilterInput {

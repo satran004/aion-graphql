@@ -4,6 +4,7 @@ import org.aion.api.type.*;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
 import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.ByteUtil;
 import org.satran.blockchain.graphql.impl.aion.service.dao.AionBlockchainAccessor;
 import org.satran.blockchain.graphql.exception.BlockChainAcessException;
 import org.satran.blockchain.graphql.impl.aion.util.ModelConverter;
@@ -166,7 +167,7 @@ public class TxnServiceImpl implements TxnService {
                                 .to(Address.wrap(args.getTo()))
                                 .value(args.getValue())
                                 .nonce(args.getNonce())
-                                .data(ByteArrayWrapper.wrap(args.getData().getBytes()))
+                                .data(ByteArrayWrapper.wrap(ByteUtil.hexStringToBytes(args.getData())))
                                 .nrgLimit(args.getNrgLimit())
                                 .nrgPrice(args.getNrgPrice())
                                 .createTxArgs();
@@ -180,7 +181,7 @@ public class TxnServiceImpl implements TxnService {
 
             byte[] bytes = apiMsg.getObject();
 
-            return new String(bytes);
+            return ByteUtil.toHexString(bytes);
         }));
     }
 

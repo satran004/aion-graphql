@@ -1,6 +1,8 @@
 <H1>GraphQL interface for Aion Blockchain</H1> 
 <a href="https://travis-ci.org/satran004/aion-graphql"><img src="https://travis-ci.org/satran004/aion-graphql.svg?branch=master"/></a>
 
+[![Join the chat at https://gitter.im/aion-graphql/Lobby](https://badges.gitter.im/aion-graphql/Lobby.svg)](https://gitter.im/aion-graphql/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Aion Mainnet GraphQL Playground: https://api.aion-graphql.com/playground.html
 
 Aion Mainnet GraphQL Endpoint: https://api.aion-graphql.com/graphql  (To be used from application)
@@ -62,6 +64,8 @@ From aion-graphql-dist-\[version\] folder,  execute the following command to sta
 _on Windows :_
 
 `bin\aion-graphql.bat`
+
+**Issue with Aion 0.3.2** : If you face any connnection issue with Aion Kernel 0.3.2, please check this issue [#10](https://github.com/satran004/aion-graphql/issues/10)  for workaround.
 
 **Note:** _Make sure you start the server inside aion-graphql-dist-\[version\]  folder only. Starting server inside bin folder will not work._
 

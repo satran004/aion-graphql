@@ -1,5 +1,6 @@
 package org.satran.blockchain.graphql.impl.aion.service;
 
+import org.aion.api.ITx;
 import org.aion.api.type.*;
 import org.aion.base.type.Address;
 import org.aion.base.type.Hash256;
@@ -507,12 +508,18 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
-    public MsgRespBean sendRawTransaction(String encodedTx) {
+    public MsgRespBean sendRawTransaction(String encodedTx, boolean async) {
         if (logger.isDebugEnabled())
             logger.debug("Sending raw transaction {} ", encodedTx);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getTx().sendRawTransaction(TypeUtil.toByteArrayWrapper(encodedTx)));
+            ITx iTx;
+            if(async)
+                iTx = api.getTx().nonBlock();
+            else
+                iTx = api.getTx();
+
+            apiMsg.set(iTx.sendRawTransaction(TypeUtil.toByteArrayWrapper(encodedTx)));
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send raw transaction : {} ", apiMsg.getErrString());
@@ -526,14 +533,20 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
-    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey) {
+    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey, boolean async) {
         if (logger.isDebugEnabled())
             logger.debug("SendSinged transaction ");
 
         TxArgs txArgs = ModelConverter.convert(txArgsInput);
 
         return accessor.call(((apiMsg, api) -> {
-            apiMsg.set(api.getTx().sendSignedTransaction(txArgs, TypeUtil.toByteArrayWrapper(privateKey)));
+            ITx iTx;
+            if(async)
+                iTx = api.getTx().nonBlock();
+            else
+                iTx = api.getTx();
+
+            apiMsg.set(iTx.sendSignedTransaction(txArgs, TypeUtil.toByteArrayWrapper(privateKey)));
 
             if (apiMsg.isError()) {
                 logger.error("Unable to send signed transaction request : {} ", apiMsg.getErrString());
@@ -547,7 +560,7 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
-    public MsgRespBean sendTransaction(TxArgsInput txArgsInput) {
+    public MsgRespBean sendTransaction(TxArgsInput txArgsInput, boolean async) {
         if (logger.isDebugEnabled())
             logger.debug("Sending transaction : {} ", txArgsInput);
 
@@ -555,7 +568,13 @@ public class TxnServiceImpl implements TxnService {
 
             TxArgs txArgs = ModelConverter.convert(txArgsInput);
 
-            apiMsg.set(api.getTx().nonBlock().sendTransaction(txArgs));
+            ITx iTx;
+            if(async)
+                iTx = api.getTx().nonBlock();
+            else
+                iTx = api.getTx();
+
+            apiMsg.set(iTx.sendTransaction(txArgs));
 
             if(apiMsg.isError()) {
                 logger.error("Error posting transaction : {} " + apiMsg.getErrString());

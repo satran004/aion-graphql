@@ -45,15 +45,15 @@ public  class TxnMutator {
         return txnService.fastTxBuild(args, call);
     }
 
-    public MsgRespBean sendRawTransaction(String encodedTx) {
-        return txnService.sendRawTransaction(encodedTx);
+    public MsgRespBean sendRawTransaction(String encodedTx, boolean async) {
+        return txnService.sendRawTransaction(encodedTx, async);
     }
 
-    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey) {
-        return txnService.sendSignedTransaction(txArgsInput, privateKey);
+    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey, boolean async) {
+        return txnService.sendSignedTransaction(txArgsInput, privateKey, async);
     }
 
-    public MsgRespBean sendTransaction(TxArgsInput txArgsInput) {
-        return txnService.sendTransaction(txArgsInput);
+    public MsgRespBean sendTransaction(TxArgsInput txArgsInput, boolean async) {
+        return txnService.sendTransaction(txArgsInput, async);
     }
 }

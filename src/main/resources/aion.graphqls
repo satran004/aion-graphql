@@ -420,20 +420,23 @@ type TxnMutator {
     #
     #Arguments:
     #encodedTx - The encoded transaction byte array with the sender's signature.
-    sendRawTransaction(encodedTx: String!): MsgResp
+    #async - true, if non blocking call. false, if blocking call. Default: false
+    sendRawTransaction(encodedTx: String!, async: Boolean): MsgResp
 
     #Initiates a transaction. Send a transaction including the raw transaction data and signed with the sender's key.
     #
     #Argument:
     #txArgs - Tx arguments,
     #privateKey - Sender's private key
-    sendSignedTransaction(txArgs: TxArgsInput!, privateKey: String!): MsgResp
+    #async - true, if non blocking call. false, if blocking call. Default: false
+    sendSignedTransaction(txArgs: TxArgsInput!, privateKey: String!, async: Boolean): MsgResp
 
     #Initiates a transaction.
     #
     #Arguments:
     #txArgs - Tx arguments
-    sendTransaction(txArgs: TxArgsInput!): MsgResp
+    #async - true, if non blocking call. false, if blocking call. Default: false
+    sendTransaction(txArgs: TxArgsInput!, async: Boolean): MsgResp
 
 }
 

@@ -38,11 +38,11 @@ public interface TxnService {
 
     public TxReceiptBean getTxReceipt(String txnHash);
 
-    public MsgRespBean sendRawTransaction(String encodedTx);
+    public MsgRespBean sendRawTransaction(String encodedTx, boolean async);
 
-    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey);
+    public MsgRespBean sendSignedTransaction(TxArgsInput txArgsInput, String privateKey, boolean async);
 
-    public MsgRespBean sendTransaction(TxArgsInput txArgsInput);
+    public MsgRespBean sendTransaction(TxArgsInput txArgsInput, boolean async);
 
 
     //additional methods

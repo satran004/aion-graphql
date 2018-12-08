@@ -98,7 +98,7 @@ public class TransactionController {
     @PostMapping(consumes = "text/plain", produces = "application/json")
     @ApiOperation(value = "Send a encoded sign transaction to kernel")
     public ResponseEntity<MsgRespBean> sendRawTransaction(@RequestBody String encodedTx) {
-        MsgRespBean resBean = txnService.sendRawTransaction(encodedTx);
+        MsgRespBean resBean = txnService.sendRawTransaction(encodedTx, false);
 
         if(resBean != null) {
             resBean.add(

@@ -3,9 +3,11 @@ package org.satran.blockchain.graphql;
 import org.aion.api.IAionAPI;
 import org.aion.api.IContract;
 import org.aion.api.sol.ISString;
+import org.aion.api.sol.ISolidityArg;
 import org.aion.api.sol.impl.Uint;
 import org.aion.api.type.*;
 import org.aion.base.type.Address;
+import org.aion.base.util.ByteUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ public class ContractTest {
 
     private static Logger logger = LoggerFactory.getLogger(ContractTest.class);
 
-    private static String url = "tcp://192.168.0.96:8548";
+    private static String url = "tcp://192.168.0.96:8547";
 
     public static void testCompile(IAionAPI api, ApiMsg apiMsg) {
 
@@ -277,6 +279,119 @@ public class ContractTest {
         System.out.println(nodeList);
     }
 
+
+    public static void contractDeployDataBuild(IAionAPI api, ApiMsg apiMsg) {
+
+        // set up the arguments for unlock account operation
+        Address account = Address.wrap("a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9");
+        String password = "test123";
+        int unlockTimeout = 600;
+
+// unlock an account
+        apiMsg.set(api.getWallet().unlockAccount(account, password, unlockTimeout));
+        if (apiMsg.isError() || !(boolean) apiMsg.getObject()) {
+            System.out.println("Unlock account failed! Please check your password  " + apiMsg.getErrString());
+            // cleanup() on return
+        }
+
+
+        String sc = null;
+        try {
+            sc = new String(Files.readAllBytes(Paths.get("/Users/satya/work/crypto-dev/aion-dev/vagrant/blogonblocks-contracts/src/main/solidity/BOBContractFactory.sol")));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // safely close API connection
+        }
+
+//         sc = "pragma solidity ^0.4.22;\n" +
+//                "\n" +
+//                "contract helloWorld {\n" +
+//                " function renderHelloWorld () public pure returns (string) {\n" +
+//                "   return 'helloWorld';\n" +
+//                " }\n" +
+//                "}";
+// contract creation:
+// this function blocks until the contract creation transaction
+// has been included in at least one block on the Blockchain
+        //long energyLimit = 1_000_000L;
+        //long energyPrice = 1L;
+        // .nrgLimit(1_000_000L)
+        //.nrgPrice(10000000000L)
+        apiMsg.set(api.getContractController().createFromSource(sc, account, 1_000_000L, 10000000000L));
+        if (apiMsg.isError()) {
+            System.out.println("Deploy contract failed with error: " + apiMsg.getErrString());
+            // safely close API connection
+        }
+
+        IContract contract = api.getContractController().getContract();
+
+// make sure to save the ABI definition for the contract since an API
+// limitation is that in order to create a Contract object, one needs the
+// contract address and the ABI definition
+        String contractAddress = contract.getContractAddress().toString();
+        String contractAbi = contract.getAbiDefToString();
+
+        System.out.println("Contract addres: " + contractAddress);
+        System.out.println("Contract Abi: " + contractAbi);
+        System.out.println("Encoded Str: " + contract);
+    }
+
+    public static void getMethod1(IAionAPI api, ApiMsg apiMsg) throws InterruptedException {
+
+        Address ownerAddress = Address.wrap("a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9");
+        Address contractAddress = Address.wrap("a0c8ffc3275734f35f5567552c144bbe4a77e0dba4f75b209ecf9ffe0b2a4646");
+
+        // String abiDefinition = "[{\"outputs\":[],\"constant\":false,\"payable\":false,\"inputs\":[{\"name\":\"_stamp\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"},{\"name\":\"_userPrivilege\",\"type\":\"bytes1\"}],\"name\":\"addUser\",\"type\":\"function\"},{\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"constant\":true,\"payable\":false,\"inputs\":[{\"name\":\"_stamp\",\"type\":\"string\"}],\"name\":\"getUserAddress\",\"type\":\"function\"},{\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"constant\":true,\"payable\":false,\"inputs\":[],\"name\":\"owner\",\"type\":\"function\"},{\"outputs\":[],\"constant\":false,\"payable\":false,\"inputs\":[{\"name\":\"_stamp\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addAddress\",\"type\":\"function\"},{\"outputs\":[],\"payable\":false,\"inputs\":[],\"name\":\"\",\"type\":\"constructor\"},{\"outputs\":[],\"inputs\":[{\"indexed\":false,\"name\":\"_stamp\",\"type\":\"string\"}],\"name\":\"UserAdded\",\"anonymous\":false,\"type\":\"event\"},{\"outputs\":[],\"inputs\":[{\"indexed\":true,\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"AddressAdded\",\"anonymous\":false,\"type\":\"event\"}]";
+
+        String abiDefinition = "[{\"outputs\":[],\"constant\":false,\"payable\":false,\"inputs\":[{\"name\":\"_greeting\",\"type\":\"string\"}],\"name\":\"updateGreeting\",\"type\":\"function\"},{\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"constant\":true,\"payable\":false,\"inputs\":[],\"name\":\"greet\",\"type\":\"function\"},{\"outputs\":[],\"payable\":false,\"inputs\":[{\"name\":\"_greeting\",\"type\":\"string\"}],\"name\":\"\",\"type\":\"constructor\"}]";
+        IContract ctr = api.getContractController().getContractAt(ownerAddress, contractAddress, abiDefinition);
+
+        // unlock account
+        api.getWallet().unlockAccount(ownerAddress, "test123");
+
+        ContractResponse rsp = ctr.newFunction("greet")
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN).build().call().getObject();
+
+        System.out.println("GET response:\n" + String.valueOf(rsp.getData().get(0)));
+
+        //System.out.println("Response.... " + new String(ByteUtil.hexStringToBytes((String)rsp.getData().get(0))));
+
+        //  System.out.println("GET response:\n" + String.valueOf(rsp.getData().get(1)));
+
+//      checking that received value matches input
+//        String received = Address.wrap((byte[]) rsp.getData().get(0)).toString();
+//        if (!received.equals(addressToAdd)) {
+//            System.out.format("The received value:%n%s%ndoes not match the given parameter:%n%s%n",
+//                    received,
+//                    addressToAdd);
+//        } else {
+//            System.out.format("The received value:%n%s%nmatches the given parameter:%n%s%n", received, addressToAdd);
+//        }
+    }
+
+
+    public static void setMethod1(IAionAPI api, ApiMsg apiMsg) throws InterruptedException {
+
+        Address ownerAddress = Address
+            .wrap("a0c0cc973a306d31320fe72cad62afaa799d076bbd492ca4d5d5d941adfa12a9");
+        Address contractAddress = Address
+            .wrap("a0c8ffc3275734f35f5567552c144bbe4a77e0dba4f75b209ecf9ffe0b2a4646");
+
+        String abiDefinition = "[{\"outputs\":[],\"constant\":false,\"payable\":false,\"inputs\":[{\"name\":\"_greeting\",\"type\":\"string\"}],\"name\":\"updateGreeting\",\"type\":\"function\"},{\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"constant\":true,\"payable\":false,\"inputs\":[],\"name\":\"greet\",\"type\":\"function\"},{\"outputs\":[],\"payable\":false,\"inputs\":[{\"name\":\"_greeting\",\"type\":\"string\"}],\"name\":\"\",\"type\":\"constructor\"}]";
+        IContract ctr = api.getContractController()
+            .getContractAt(ownerAddress, contractAddress, abiDefinition);
+
+        // unlock account
+        api.getWallet().unlockAccount(ownerAddress, "test123");
+
+        Object object = ctr.newFunction("updateGreeting")
+            .setParam(ISString.copyFrom("New Hello"))
+            .setTxNrgLimit(NRG_LIMIT_TX_MAX).setTxNrgPrice(NRG_PRICE_MIN).build().execute().getObject();
+
+        System.out.println("Set response:\n" + String.valueOf(object));
+    }
+
     public static void main(String[] args) throws Exception {
         IAionAPI api = IAionAPI.init();
 
@@ -289,9 +404,10 @@ public class ContractTest {
 
         try {
 
+            setMethod1(api, apiMsg);
 //            contractTest(api, apiMsg);
             //getNodeInfo(api, apiMsg);
-            invokeMethod(api, apiMsg);
+//            invokeMethod(api, apiMsg);
 //            getMethod(api, apiMsg);
          //   contractTest(api, apiMsg);
         } finally {

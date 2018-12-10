@@ -1,8 +1,6 @@
 package org.satran.blockchain.graphql.model.input;
 
 import org.satran.blockchain.graphql.model.Output;
-import org.satran.blockchain.graphql.model.SolidityType;
-
 import java.util.List;
 
 public class ContractFunction {
@@ -16,7 +14,7 @@ public class ContractFunction {
 
     }
 
-    public ContractFunction param(SolidityType type, List<Object> values) {
+    public ContractFunction param(String type, List<Object> values) {
         Param param = new Param();
         param.setType(type);
         param.setValues(values);
@@ -24,7 +22,7 @@ public class ContractFunction {
         return this;
     }
 
-    public ContractFunction param(SolidityType type, Object value) {
+    public ContractFunction param(String type, Object value) {
         Param param = new Param();
         param.setType(type);
         param.setValue(value);

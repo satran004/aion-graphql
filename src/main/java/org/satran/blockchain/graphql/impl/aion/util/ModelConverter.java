@@ -1,21 +1,48 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
 import com.google.gson.Gson;
-import org.aion.api.IContract;
-import org.aion.api.type.*;
-import org.aion.base.type.Address;
-import org.aion.base.util.ByteArrayWrapper;
-import org.satran.blockchain.graphql.model.*;
-import org.satran.blockchain.graphql.model.Block;
-import org.satran.blockchain.graphql.model.TxDetails;
-import org.satran.blockchain.graphql.model.input.TxArgsInput;
-import org.springframework.beans.BeanUtils;
-
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.aion.api.IContract;
+import org.aion.api.type.BlockDetails;
+import org.aion.api.type.CompileResponse;
+import org.aion.api.type.ContractEvent;
+import org.aion.api.type.ContractEventFilter;
+import org.aion.api.type.ContractResponse;
+import org.aion.api.type.DeployResponse;
+import org.aion.api.type.MsgRsp;
+import org.aion.api.type.Node;
+import org.aion.api.type.Protocol;
+import org.aion.api.type.TxArgs;
+import org.aion.api.type.TxReceipt;
+import org.aion.base.type.Address;
+import org.aion.base.util.ByteArrayWrapper;
+import org.aion.base.util.ByteUtil;
+import org.satran.blockchain.graphql.exception.DataConversionException;
+import org.satran.blockchain.graphql.model.Block;
+import org.satran.blockchain.graphql.model.CompileResponseBean;
+import org.satran.blockchain.graphql.model.ContractAbiEntryBean;
+import org.satran.blockchain.graphql.model.ContractAbiIOParamBean;
+import org.satran.blockchain.graphql.model.ContractBean;
+import org.satran.blockchain.graphql.model.ContractEventBean;
+import org.satran.blockchain.graphql.model.ContractEventFilterBean;
+import org.satran.blockchain.graphql.model.ContractResponseBean;
+import org.satran.blockchain.graphql.model.DeployResponseBean;
+import org.satran.blockchain.graphql.model.MsgRespBean;
+import org.satran.blockchain.graphql.model.NodeInfo;
+import org.satran.blockchain.graphql.model.ProtocolInfo;
+import org.satran.blockchain.graphql.model.TxDetails;
+import org.satran.blockchain.graphql.model.TxReceiptBean;
+import org.satran.blockchain.graphql.model.input.TxArgsInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 public class ModelConverter {
+
+    private final static Logger logger = LoggerFactory.getLogger(ModelConverter.class);
 
     public static Block convert(BlockDetails blockDetails) {
         Block b = new Block();
@@ -152,8 +179,26 @@ public class ModelConverter {
     public static TxArgs convert(TxArgsInput gqlInput) {
         TxArgs.TxArgsBuilder builder = new TxArgs.TxArgsBuilder();
 
-        if(gqlInput.getData() != null)
-            builder.data(ByteArrayWrapper.wrap(gqlInput.getData().getBytes()));
+        try {
+            if (gqlInput.getData() != null) {
+                if ("hex".equals(gqlInput.getEncoding()))
+                    builder
+                        .data(ByteArrayWrapper.wrap(ByteUtil.hexStringToBytes(gqlInput.getData())));
+                else {
+                    byte[] bytes;
+                    if(gqlInput.getEncoding() != null)
+                        bytes = gqlInput.getData().getBytes(gqlInput.getEncoding());
+                    else
+                        bytes = gqlInput.getData().getBytes();
+
+                    builder.data(ByteArrayWrapper.wrap(bytes));
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Unable to decode the string", e);
+            throw new DataConversionException("Unable to convert the data with the specified encoding "
+                + gqlInput.getEncoding());
+        }
 
         builder.nrgPrice(gqlInput.getNrgPrice());
         builder.nrgLimit(gqlInput.getNrgLimit());

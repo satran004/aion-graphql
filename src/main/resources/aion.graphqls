@@ -649,6 +649,7 @@ input TxArgsInput {
     nonce: BigInteger
     nrgLimit: Long
     nrgPrice: Long
+    encoding: String
 }
 
 type MsgResp {
@@ -696,15 +697,6 @@ type TxReceipt {
     txIndex: String
 }
 
-enum SolidityType {
-    _address,
-    _bool,
-    _int,
-    _uint,
-    _bytes,
-    _string
-}
-
 input ContractFunction {
     name: String!,
     params: [Param]
@@ -712,13 +704,14 @@ input ContractFunction {
 }
 
 input Param {
-    type: SolidityType
+    type: String
     value: Any
     values: [Any]
+    encoding: String
 }
 
 input Output {
-    type: SolidityType
+    type: String
     encoding: String
 }
 

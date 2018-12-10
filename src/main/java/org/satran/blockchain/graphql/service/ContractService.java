@@ -1,13 +1,18 @@
 package org.satran.blockchain.graphql.service;
 
-import org.satran.blockchain.graphql.model.*;
+import java.math.BigInteger;
+import java.util.List;
+import org.satran.blockchain.graphql.model.ContractBean;
+import org.satran.blockchain.graphql.model.ContractDeployPayload;
+import org.satran.blockchain.graphql.model.ContractEventBean;
+import org.satran.blockchain.graphql.model.ContractEventFilterBean;
+import org.satran.blockchain.graphql.model.ContractResponseBean;
+import org.satran.blockchain.graphql.model.Output;
+import org.satran.blockchain.graphql.model.TxReceiptBean;
 import org.satran.blockchain.graphql.model.input.ConstructorArgs;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
 import org.satran.blockchain.graphql.model.input.Param;
-
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.Flow;
+import org.satran.blockchain.graphql.model.input.TxArgsInput;
 
 public interface ContractService {
 
@@ -34,5 +39,24 @@ public interface ContractService {
 
 
     public boolean deregisterAllEvents();
+
+    //Methods with data for signing
+    public TxArgsInput getContractCallPayload(String fromAddress, String contractAddress, String abiDefinition,
+        ContractFunction contractFunction, long nrgLimit, long nrgPrice, long txValue);
+
+    public TxArgsInput getContractDeployPayload(String compileCode, String abiString, String fromAddress,
+        long nrgLimit, long nrgPrice, List<Object> args);
+
+    public ContractDeployPayload getContractDeployPayloadBySource(String source, String contractName, String fromAddress,
+        long nrgLimit, long nrgPrice, List<Object> args);
+
+    //deploy using default address in kernel
+    public TxReceiptBean deployContractBySource(String source, String contractName, String fromAddress,
+        long nrgLimit, long nrgPrice, List<Object> args);
+
+    public TxReceiptBean deployContractByCode(String code, String abiString, String fromAddress,
+        long nrgLimit, long nrgPrice, List<Object> args);
+
+    public List<?> call(TxArgsInput txArgsInput, String abiFunction, List<Output> outputTypes);
 
 }

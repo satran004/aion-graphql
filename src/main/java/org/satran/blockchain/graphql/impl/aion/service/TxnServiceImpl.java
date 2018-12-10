@@ -157,21 +157,29 @@ public class TxnServiceImpl implements TxnService {
     }
 
     @Override
-    public String call(TxArgsInput args) { //TODO test
+    public String call(TxArgsInput args) {
+        byte[] bytes = callBytes(args);
+
+        return ByteUtil.toHexString(bytes);
+
+    }
+
+    @Override
+    public byte[] callBytes(TxArgsInput args) { //Needed for internal calls
         if (logger.isDebugEnabled())
             logger.debug("Invoking call {} ", args);
 
         return accessor.call(((apiMsg, api) -> {
 
             TxArgs txArgs = new TxArgs.TxArgsBuilder()
-                                .from(Address.wrap(args.getFrom()))
-                                .to(Address.wrap(args.getTo()))
-                                .value(args.getValue())
-                                .nonce(args.getNonce())
-                                .data(ByteArrayWrapper.wrap(ByteUtil.hexStringToBytes(args.getData())))
-                                .nrgLimit(args.getNrgLimit())
-                                .nrgPrice(args.getNrgPrice())
-                                .createTxArgs();
+                .from(Address.wrap(args.getFrom()))
+                .to(Address.wrap(args.getTo()))
+                .value(args.getValue())
+                .nonce(args.getNonce())
+                .data(ByteArrayWrapper.wrap(ByteUtil.hexStringToBytes(args.getData())))
+                .nrgLimit(args.getNrgLimit())
+                .nrgPrice(args.getNrgPrice())
+                .createTxArgs();
 
             apiMsg.set(api.getTx().call(txArgs));
 
@@ -182,7 +190,8 @@ public class TxnServiceImpl implements TxnService {
 
             byte[] bytes = apiMsg.getObject();
 
-            return ByteUtil.toHexString(bytes);
+            return bytes;
+
         }));
     }
 

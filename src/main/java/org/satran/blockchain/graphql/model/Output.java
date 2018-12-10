@@ -2,18 +2,31 @@ package org.satran.blockchain.graphql.model;
 
 public class Output {
 
-    public final static String HEX_TYPE = "HEX";
-    public final static String BASE64_TYPE = "BASE64";
+    public final static String HEX_TYPE = "hex";
+    public final static String BASE64_TYPE = "base64";
 
-    private SolidityType type;
+    private String type;
     private String encoding;
 //    private Boolean array;
 
-    public SolidityType getType() {
+    public Output() {
+
+    }
+
+    public Output(String type) {
+        this.type = type;
+    }
+
+    public Output(String type, String encoding) {
+        this.type = type;
+        this.encoding = encoding;
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(SolidityType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

@@ -11,6 +11,9 @@ public class TxArgsInput {
     private long nrgLimit;
     private long nrgPrice;
 
+    //If data is in hex or utf-8
+    private String encoding;
+
     public String getData() {
         return data;
     }
@@ -65,6 +68,22 @@ public class TxArgsInput {
 
     public void setNrgPrice(long nrgPrice) {
         this.nrgPrice = nrgPrice;
+    }
+
+    /**
+     * Get the char encoding of passed data hex or utf-8
+     * @return
+     */
+    public String getEncoding() {
+        return encoding;
+    }
+
+    /**
+     * Set the char encoding of passed data hex or utf-8
+     * @param encoding
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     @Override

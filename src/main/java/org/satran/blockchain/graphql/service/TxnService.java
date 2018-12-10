@@ -10,6 +10,8 @@ public interface TxnService {
 
     public String call(TxArgsInput args);
 
+    public byte[] callBytes(TxArgsInput args);
+
     public Map<String, CompileResponseBean> compile(String code);
 
     public List<DeployResponseBean> contractDeploy(ContractDeployBean cd);

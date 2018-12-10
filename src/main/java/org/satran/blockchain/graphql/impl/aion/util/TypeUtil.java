@@ -1,6 +1,8 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
+import java.io.UnsupportedEncodingException;
 import org.aion.api.sol.IInt;
+import org.aion.api.sol.IUint;
 import org.aion.base.util.ByteArrayWrapper;
 import org.aion.base.util.Hex;
 import org.satran.blockchain.graphql.exception.DataConversionException;
@@ -8,13 +10,39 @@ import org.satran.blockchain.graphql.exception.DataConversionException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.spongycastle.util.encoders.Base64;
 
 public class TypeUtil {
 
-    public static byte[] toBytes(String str) {
+    public static byte[] toBytes(Object obj, String encoding) {
+        if(obj == null)
+            return null;
+
+        if(obj instanceof byte[])
+            return (byte[])obj;
+        else {
+            return _toBytes(String.valueOf(obj), encoding);
+        }
+    }
+
+    private static byte[] _toBytes(String str, String encoding) {
         if(str == null) return null;
-        else
-            return str.getBytes();
+        else {
+            if(encoding == null)
+                return str.getBytes();
+            else {
+                try {
+                    if(encoding.equalsIgnoreCase("hex")) {
+                        return Hex.decode(str);
+                    } else if(encoding.equalsIgnoreCase("base64")) {
+                        return Base64.decode(str);
+                    }
+                    return str.getBytes(encoding);
+                } catch (UnsupportedEncodingException e) {
+                    throw new DataConversionException("Unable to convert bytes with encoding : " + encoding);
+                }
+            }
+        }
     }
 
     public static String toString(byte[] bytes) {
@@ -55,6 +83,20 @@ public class TypeUtil {
             throw new DataConversionException("Cannot convert the value to Integer: " + value);
     }
 
+    public static IUint toIUint(Object value) {
+
+        if (value instanceof Integer)
+            return IUint.copyFrom((Integer) value);
+        else if (value instanceof Long) {
+            return IUint.copyFrom((Long) value);
+        } else if (value instanceof String) {
+            return IUint.copyFrom(String.valueOf(value));
+        } else if(value instanceof BigInteger) {
+            return IUint.copyFrom(((BigInteger)value).longValue());
+        } else
+            throw new DataConversionException("Cannot convert the value to Integer: " + value);
+    }
+
     public static IInt toIInt(List<Object> list) {
         if(list == null)
             return null;
@@ -65,6 +107,15 @@ public class TypeUtil {
         return IInt.copyFrom(intList);
     }
 
+    public static IUint toIUint(List<Object> list) {
+        if(list == null)
+            return null;
+
+        List intList = list.stream().map(v -> toIUint(v))
+            .collect(Collectors.toList());
+
+        return IUint.copyFrom(intList);
+    }
    /* public static int toInteger(Object value) {
         if(value instanceof Integer)
             return (Integer)value;
@@ -92,11 +143,11 @@ public class TypeUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<byte[]> toBytesList(List<Object> list) {
+    public static List<byte[]> toBytesList(List<Object> list, String encoding) {
         if(list == null)
             return null;
 
-        return list.stream().map(v -> toBytes(String.valueOf(v)))
+        return list.stream().map(v -> toBytes(v, encoding))
                 .collect(Collectors.toList());
     }
 

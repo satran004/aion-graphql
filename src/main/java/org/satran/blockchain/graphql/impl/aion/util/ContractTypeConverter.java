@@ -1,8 +1,28 @@
 package org.satran.blockchain.graphql.impl.aion.util;
 
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toBoolean;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toBooleanList;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toBytes;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toBytesList;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toIInt;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toIUint;
+import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toStringList;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.aion.api.IContract;
 import org.aion.api.IUtils;
-import org.aion.api.sol.*;
+import org.aion.api.sol.IAddress;
+import org.aion.api.sol.IBool;
+import org.aion.api.sol.IBytes;
+import org.aion.api.sol.ISString;
+import org.aion.api.sol.ISolidityArg;
 import org.aion.api.type.ContractResponse;
 import org.aion.base.type.Address;
 import org.apache.commons.lang3.StringUtils;
@@ -10,18 +30,10 @@ import org.jetbrains.annotations.NotNull;
 import org.satran.blockchain.graphql.exception.DataConversionException;
 import org.satran.blockchain.graphql.model.ContractResponseBean;
 import org.satran.blockchain.graphql.model.Output;
-import org.satran.blockchain.graphql.model.input.Param;
-import org.satran.blockchain.graphql.model.SolidityType;
 import org.satran.blockchain.graphql.model.input.ContractFunction;
+import org.satran.blockchain.graphql.model.input.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.*;
-import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toBytes;
-import static org.satran.blockchain.graphql.impl.aion.util.TypeUtil.toIInt;
 
 public class ContractTypeConverter {
 
@@ -57,46 +69,42 @@ public class ContractTypeConverter {
 
         ISolidityArg solValue = null;
 
-        if(param.getType() == SolidityType._address) {
+        if(param.getType().startsWith("address")) {
 
             if(isArray)
                 solValue = IAddress.copyFrom(toStringList(param.getValues()));
             else
                 solValue = IAddress.copyFrom(String.valueOf(param.getValue()));
 
-        } else if(param.getType() == SolidityType._bool) {
+        } else if(param.getType().startsWith("bool")) {
 
             if(isArray)
                 solValue = IBool.copyFrom(toBooleanList(param.getValues()));
             else
                 solValue = IBool.copyFrom(toBoolean(param.getValue()));
 
-        } else if(param.getType() == SolidityType._bytes) {
+        } else if(param.getType().startsWith("bytes")) {
 
             if(isArray)
-                solValue = IBytes.copyFrom(toBytesList(param.getValues()));
+                solValue = IBytes.copyFrom(toBytesList(param.getValues(), param.getEncoding()));
             else
-                solValue = IBytes.copyFrom(toBytes(String.valueOf(param.getValue())));
+                solValue = IBytes.copyFrom(toBytes(String.valueOf(param.getValue()), param.getEncoding()));
 
-        } else if(param.getType() == SolidityType._dbytes) {
-
-            solValue = IBytes.copyFrom(toBytes(String.valueOf(param.getValue())));
-
-        } else if(param.getType() == SolidityType._int) {
+        } else if(param.getType().startsWith("int")) {
 
             if(isArray)
                 solValue = toIInt(param.getValues());
             else
                 solValue = toIInt(param.getValue());
 
-        } else if(param.getType() == SolidityType._uint) {
+        } else if(param.getType().startsWith("uint")) {
 
             if(isArray)
-                solValue = toIInt(param.getValues());
+                solValue = toIUint(param.getValues());
             else
-                solValue = toIInt(param.getValue());
+                solValue = toIUint(param.getValue());
 
-        } else if(param.getType() == SolidityType._string) {
+        } else if(param.getType().startsWith("string")) {
             solValue = ISString.copyFrom(String.valueOf(param.getValue()));
         } else
             throw new DataConversionException("Unable to convert input parameters : " + param);
@@ -182,33 +190,28 @@ public class ContractTypeConverter {
         } else
             return null;
 //
-        if(outputParam.getType() == SolidityType._address) {
-
+        if(outputParam.getType().startsWith("address")) {
             return Address.wrap((byte [])outputData);
 
-        } else if(outputParam.getType() == SolidityType._bool) {
+        } else if(outputParam.getType().startsWith("bool")) {
 
             return (Boolean)outputData;
 
-        } else if(outputParam.getType() == SolidityType._bytes) {
+        } else if(outputParam.getType().startsWith("bytes")) {
 
             return byteToString((byte[])outputData, outputParam.getEncoding());
 
-        } else if(outputParam.getType() == SolidityType._dbytes) {
-
-            return byteToString((byte[])outputData, outputParam.getEncoding());
-
-        } else if(outputParam.getType() == SolidityType._int) {
+        } else if(outputParam.getType().startsWith("int")) {
 
             //No need to convert
             return outputData;//(long)outputData;
 
-        } else if(outputParam.getType() == SolidityType._uint) {
+        } else if(outputParam.getType().startsWith("uint")) {
             //no conversion required
             return outputData;
             //return (long)outputData;
 
-        } else if(outputParam.getType() == SolidityType._string) {
+        } else if(outputParam.getType().startsWith("string")) {
 
             return String.valueOf(outputData);
 
@@ -233,7 +236,8 @@ public class ContractTypeConverter {
                 return new String(bytes, enc);
             } catch (Exception e) {
                 logger.error("Unable to encode {} from byte to string with encoding {}", bytes, enc);
-                return new String(bytes); //try to encode with default utf-8
+                throw  new DataConversionException("Unable to encode {} from byte to string with encoding : " + enc );
+//                return new String(bytes); //try to encode with default utf-8
             }
         }
     }

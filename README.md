@@ -3,10 +3,6 @@
 
 [![Join the chat at https://gitter.im/aion-graphql/Lobby](https://badges.gitter.im/aion-graphql/Lobby.svg)](https://gitter.im/aion-graphql/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Aion Mainnet GraphQL Playground: https://api.aion-graphql.com/playground.html
-
-Aion Mainnet GraphQL Endpoint: https://api.aion-graphql.com/graphql  (To be used from application)
-
 [Manual](https://docs.aion-graphql.com)
 
 API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL API </a>
@@ -88,3 +84,6 @@ If you want to test GraphQL API on the browser, try the following url
 After running the above command, GraphQL endpoint can be accessed through the following url from your application :
 
 `http://[host]:[port]/graphql`
+
+### Demo
+[![Aion GraphQL Playground Demo](https://img.youtube.com/vi/xnnz8EBMGjQ/0.jpg)](https://www.youtube.com/watch?v=xnnz8EBMGjQ)

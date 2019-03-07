@@ -85,5 +85,5 @@ After running the above command, GraphQL endpoint can be accessed through the fo
 
 `http://[host]:[port]/graphql`
 
-### Demo
+### Demo - Aion GraphQL Playground
 [![Aion GraphQL Playground Demo](https://img.youtube.com/vi/xnnz8EBMGjQ/0.jpg)](https://www.youtube.com/watch?v=xnnz8EBMGjQ)

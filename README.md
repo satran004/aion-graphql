@@ -3,7 +3,7 @@
 
 [![Join the chat at https://gitter.im/aion-graphql/Lobby](https://badges.gitter.im/aion-graphql/Lobby.svg)](https://gitter.im/aion-graphql/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[Manual](https://docs.aion-graphql.com)
+[Manual](https://satran004.gitbook.io/aion-graphql/)
 
 API Doc: <a href="https://satran004.github.io/aion-graphql-docs/"> Aion GraphQL API </a>
 
